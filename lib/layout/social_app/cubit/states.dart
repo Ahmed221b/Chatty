@@ -43,4 +43,4 @@ class SocialGetAllUsersErrorState extends SocialStates
 class SocialSendMessageSuccessState extends SocialStates{}
 class SocialSendMessageErrorState extends SocialStates{}
 class SocialGetMessagesSuccessState extends SocialStates{}
-class SocialReceiveMessageSuccessState extends SocialStates{}
+//class SocialReceiveMessageSuccessState extends SocialStates{}

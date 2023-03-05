@@ -280,7 +280,7 @@ class SocialCubit extends Cubit<SocialStates>{
         .collection('messages')
         .add(model.toMap())
         .then((value){
-      emit(SocialReceiveMessageSuccessState());
+      emit(SocialSendMessageSuccessState());
     })
         .catchError((error){
       emit(SocialSendMessageErrorState());

@@ -39,7 +39,11 @@ class ChatDetailsScreen extends StatelessWidget {
       SocialCubit.get(context).getMessages(receiverId: userModel!.uId!,);
       return BlocConsumer<SocialCubit,SocialStates>(
         listener: (context,state){
-          if (state is SocialSendMessageSuccessState || state is SocialGetMessagesSuccessState || State is SocialReceiveMessageSuccessState)
+          if (state is SocialSendMessageSuccessState)
+            {
+              ScrollDown();
+            }
+          else if(state is SocialGetMessagesSuccessState)
             {
               ScrollDown();
             }
@@ -69,25 +73,23 @@ class ChatDetailsScreen extends StatelessWidget {
               ),
               resizeToAvoidBottomInset: true,
               floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-              floatingActionButton: Container(
-                padding: EdgeInsets.symmetric(vertical: 65,horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    FloatingActionButton(onPressed: (){
-                      ScrollDown();
-                    },
-                    child: Icon(Icons.arrow_downward_sharp,)
-                    )
-                  ],
-                ),
-              ),
+              // floatingActionButton: Container(
+              //   padding: EdgeInsets.symmetric(vertical: 65,horizontal: 10),
+              //   child: Row(
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     children: <Widget>[
+              //       FloatingActionButton(onPressed: (){
+              //         ScrollDown();
+              //       },
+              //       child: Icon(Icons.arrow_downward_sharp,)
+              //       )
+              //     ],
+              //   ),
+              // ),
               body: Padding(
                 padding: const EdgeInsets.all(20.0),
-
                 child: Stack(
                   children: [
-
                       Column(
                         children: [
                           Expanded(
