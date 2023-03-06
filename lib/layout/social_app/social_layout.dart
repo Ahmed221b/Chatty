@@ -50,19 +50,19 @@ class SocialLayout extends StatelessWidget {
                     icon: Icon(
                       IconBroken.Chat,
                     ),
-                  label: 'Chat',
+                  label: 'Chats',
                 ),
                 BottomNavigationBarItem(
                     icon: Icon(
                       IconBroken.User,
                     ),
-                  label: 'User',
+                  label: 'Contacts',
                 ),
                 BottomNavigationBarItem(
                     icon: Icon(
-                      IconBroken.Setting,
+                      Icons.person_outlined,
                     ),
-                  label: 'Settings',
+                  label: 'Profile',
                 ),
               ],
           ),

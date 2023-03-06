@@ -1,10 +1,10 @@
 
-import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'dart:convert';
+
 import 'package:first_app/layout/social_app/cubit/cubit.dart';
 import 'package:first_app/layout/social_app/cubit/states.dart';
 import 'package:first_app/models/social_app/message_model.dart';
 import 'package:first_app/models/social_app/social_user_model.dart';
-import 'package:first_app/shared/components/components.dart';
 import 'package:first_app/shared/components/constants.dart';
 import 'package:first_app/shared/styles/colors.dart';
 import 'package:first_app/shared/styles/icon_broken.dart';
@@ -16,42 +16,62 @@ import 'package:http/http.dart' as http;
 class ChatDetailsScreen extends StatelessWidget {
   SocialUserModel? userModel;
   var url;
-  String? QueryText = 'not_cyberbullying';
+  var queryText;
   ChatDetailsScreen({super.key, this.userModel,});
   var messageController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
+  // final ScrollController _scrollController = ScrollController();
 
 
-  void ScrollDown()
-  {
-    _scrollController.animateTo(
-      _scrollController.position.maxScrollExtent,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeOut,
-    );
+
+
+
+
+  Future<String> fetchData(String? queryString) async {
+    final response = await http.get(Uri.parse('http://192.168.1.32:5000?query=$queryString'));
+
+    if (response.statusCode == 200) {
+      final jsonResponse = jsonDecode(response.body);
+      final data = jsonResponse['prediction'];
+      return data;
+
+    } else {
+      throw Exception('Failed to load data');
+    }
   }
 
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)
+  {
 
     return Builder(builder: (BuildContext context)
     {
       SocialCubit.get(context).getMessages(receiverId: userModel!.uId!,);
       return BlocConsumer<SocialCubit,SocialStates>(
         listener: (context,state){
-          if (state is SocialSendMessageSuccessState)
-            {
-              ScrollDown();
-            }
-          else if(state is SocialGetMessagesSuccessState)
-            {
-              ScrollDown();
-            }
+          // if (state is SocialSendMessageSuccessState)
+          //   {
+          //     _scrollController.animateTo(
+          //       _scrollController.position.maxScrollExtent,
+          //       duration: const Duration(milliseconds: 200),
+          //       curve: Curves.easeOut,
+          //     );
+          //   }
+          // else if(state is SocialGetMessagesSuccessState)
+          //   {
+          //     WidgetsBinding.instance!.addPostFrameCallback((_) {
+          //       _scrollController.animateTo(
+          //         _scrollController.position.maxScrollExtent,
+          //         duration: const Duration(milliseconds: 200),
+          //         curve: Curves.easeOut,
+          //       );
+          //     });
+          //   }
         },
         builder: (context,state)
         {
-          return ScaffoldMessenger(
-            child: Scaffold(
+          return
+             Scaffold(
               appBar: AppBar(
                 titleSpacing: 0.0,
                 title: Row(
@@ -72,20 +92,7 @@ class ChatDetailsScreen extends StatelessWidget {
                 ),
               ),
               resizeToAvoidBottomInset: true,
-              floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-              // floatingActionButton: Container(
-              //   padding: EdgeInsets.symmetric(vertical: 65,horizontal: 10),
-              //   child: Row(
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     children: <Widget>[
-              //       FloatingActionButton(onPressed: (){
-              //         ScrollDown();
-              //       },
-              //       child: Icon(Icons.arrow_downward_sharp,)
-              //       )
-              //     ],
-              //   ),
-              // ),
+
               body: Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Stack(
@@ -93,14 +100,28 @@ class ChatDetailsScreen extends StatelessWidget {
                       Column(
                         children: [
                           Expanded(
-                            child: ListView.separated(
+                            child:
+
+                            ListView.separated(
+                              // controller: _scrollController,
                               physics: const BouncingScrollPhysics(),
-                              controller: _scrollController,
-                              itemBuilder: (context, index) {
+                              itemBuilder: (context, index)  {
                                 var message = SocialCubit.get(context).messages[index];
                                 if (SocialCubit.get(context).userModel!.uId == message.senderId) {
-                                  messageController.clear();
-                                  return buildMyMessage(message);
+                                  return FutureBuilder<String>(
+                                    future: fetchData(message.text!.trim()),
+                                    builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+                                      if (snapshot.connectionState == ConnectionState.done) {
+                                        if (snapshot.data == 'not_cyberbullying') {
+                                          return buildMyMessage(message);
+                                        } else {
+                                          return buildWarningMessage('This is Not cool');
+                                        }
+                                      } else {
+                                        return buildLoadingMessage(); // Show a loading indicator
+                                      }
+                                    },
+                                  );
                                 }
                                 return buildMessage(message);
                               },
@@ -109,17 +130,36 @@ class ChatDetailsScreen extends StatelessWidget {
                               ),
                               itemCount: SocialCubit.get(context).messages.length,
                             ),
+
+                            // ListView.separated(
+                            //   physics: const BouncingScrollPhysics(),
+                            //   controller: _scrollController,
+                            //   itemBuilder: (context, index)  {
+                            //
+                            //     if(SocialCubit.get(context).isWarning) {
+                            //       SocialCubit.get(context).changeWarningVariable(isWarning);
+                            //       return buildWarningMessage('This is Cyberbullying');
+                            //     }
+                            //
+                            //     var message = SocialCubit.get(context).messages[index];
+                            //     if (SocialCubit.get(context).userModel!.uId == message.senderId) {
+                            //           return buildMyMessage(message);
+                            //     }
+                            //     return buildMessage(message);
+                            //   },
+                            //   separatorBuilder: (context, index) => const SizedBox(
+                            //     height: 15.0,
+                            //   ),
+                            //   itemCount: SocialCubit.get(context).messages.length,
+                            // ),
                           ),
-                          SizedBox(height: 10.0,),
+                          const SizedBox(height: 10.0,),
                           Padding(
                             padding: const EdgeInsets.all(5.0),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: TextFormField(
-                                    onChanged: (value) {
-                                      url = 'http://192.168.1.7:5000//?query=' + value.toString();
-                                    },
                                     controller: messageController,
                                     decoration: const InputDecoration(
                                       hintText: 'Type your message here...',
@@ -144,20 +184,58 @@ class ChatDetailsScreen extends StatelessWidget {
                                     color: defaultColor,
                                   ),
                                 ),
-                                const SizedBox(width: 10.0),
-                                Container(
+                                 const SizedBox(width: 10.0),
+                                SizedBox(
                                   height: 50.0,
-                                  child: MaterialButton(
-                                    onPressed: () {
-                                      SocialCubit.get(context).sendMessage(
-                                        receiverId: userModel!.uId!,
-                                        dateTime: DateTime.now().toString(),
-                                        text: messageController.text,
-                                        image: messageImg ?? '',
-                                      );
-                                      messageController.clear();
-                                      // Scroll to the last message
-                                      ScrollDown();
+                                  child:
+                                  MaterialButton(
+                                    onPressed: () async {
+                                      queryText = await fetchData(messageController.text.trim());
+
+                                      if(queryText != 'not_cyberbullying')
+                                        {
+                                          if (messageController.text.isNotEmpty || messageImg != null) {
+
+                                            SocialCubit.get(context).sendMessage(
+                                              receiverId: userModel!.uId!,
+                                              dateTime: DateTime.now().toString(),
+                                              text: messageController.text,
+                                              image: messageImg ?? '',
+                                              warning: true,
+                                            );
+                                            messageController.clear();
+                                            messageImg = null;
+                                            // Scroll to the last message
+                                            //0scrollDown();
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Please enter some text or select an image.')),
+                                            );
+                                          }
+                                        }
+                                      else
+                                        {
+                                          if (messageController.text.isNotEmpty || messageImg != null) {
+
+                                            SocialCubit.get(context).sendMessage(
+                                              receiverId: userModel!.uId!,
+                                              dateTime: DateTime.now().toString(),
+                                              text: messageController.text,
+                                              image: messageImg ?? '',
+                                              warning: false,
+                                            );
+                                            messageController.clear();
+                                            messageImg = null;
+                                            // Scroll to the last message
+                                            //0scrollDown();
+                                          } else {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Please enter some text or select an image.')),
+                                            );
+                                          }
+                                        }
+
+
                                     },
                                     minWidth: 1.0,
                                     color: defaultColor,
@@ -204,40 +282,123 @@ class ChatDetailsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            ),
-          );
+            );
+
         },
       );
     },
     );
   }
 
-  Widget? buildMessage(MessageModel? model)  {
-    if (model!.text == '')
-      {
-        ScrollDown();
+  Widget buildLoadingMessage() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 8.0),
+      child: Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
 
-        return Container(
-          child: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: const BorderRadiusDirectional.only(
-                  bottomEnd: Radius.circular(10.0,),
-                  topStart: Radius.circular(10.0,),
-                  topEnd: Radius.circular(10.0,),
-                ),
+  Widget buildWarningMessage(String warningText) {
+    return Align(
+      alignment: AlignmentDirectional.centerEnd,
+      child: Container(
+        decoration: const BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadiusDirectional.only(
+            bottomEnd: Radius.circular(10.0),
+            topStart: Radius.circular(10.0),
+            topEnd: Radius.circular(10.0),
+          ),
+        ),
+        padding: const EdgeInsets.symmetric(
+          vertical: 5.0,
+          horizontal: 10.0,
+        ),
+        child: Text(
+            warningText,
+        style: const TextStyle(
+          color: Colors.white
+        ),),
+      ),
+    );
+  }
+
+
+  Widget buildMyMessage(MessageModel? model) {
+    if (model!.text == '')
+    {
+      return Align(
+        alignment: AlignmentDirectional.centerEnd,
+        child: Container(
+            decoration: BoxDecoration(
+              color: defaultColor.withOpacity(0.2,),
+              borderRadius: const BorderRadiusDirectional.only(
+                bottomEnd: Radius.circular(10.0,),
+                topStart: Radius.circular(10.0,),
+                topEnd: Radius.circular(10.0,),
               ),
-              padding: const EdgeInsets.symmetric(
-                vertical: 5.0,
-                horizontal: 10.0,
-              ),
-              child: Image.network(model.image!,
-              width: 200.0,
-              height: 200.0,
-              fit: BoxFit.fill,),
             ),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5.0,
+              horizontal: 10.0,
+            ),
+            child:
+            Image.network(
+              model.image!,
+              height: 200.0,
+              width: 200.0,
+              fit: BoxFit.fill,
+            )
+        ),
+      );
+    }
+    else
+    {
+      return Align(
+        alignment: AlignmentDirectional.centerEnd,
+        child: Container(
+            decoration: BoxDecoration(
+              color: defaultColor.withOpacity(0.2,),
+              borderRadius: const BorderRadiusDirectional.only(
+                bottomEnd: Radius.circular(10.0,),
+                topStart: Radius.circular(10.0,),
+                topEnd: Radius.circular(10.0,),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5.0,
+              horizontal: 10.0,
+            ),
+            child: Text(model.text!)
+        ),
+      );
+    }
+  }
+
+  Widget? buildMessage(MessageModel? model)
+  {
+    if (model!.text == '' && model.isBullying == false)
+      {
+        return Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: const BorderRadiusDirectional.only(
+                bottomEnd: Radius.circular(10.0,),
+                topStart: Radius.circular(10.0,),
+                topEnd: Radius.circular(10.0,),
+              ),
+            ),
+            padding: const EdgeInsets.symmetric(
+              vertical: 5.0,
+              horizontal: 10.0,
+            ),
+            child: Image.network(model.image!,
+            width: 200.0,
+            height: 200.0,
+            fit: BoxFit.fill,),
           ),
         );
 
@@ -257,91 +418,17 @@ class ChatDetailsScreen extends StatelessWidget {
           vertical: 5.0,
           horizontal: 10.0,
         ),
-        child: Text('${model!.text}'),
+        child: Text('${model.text}'),
       ),
     );
 
     }
-  }
 
-  Widget? buildMyMessage(MessageModel? model) {
-    if (model!.text == '')
-    {
-      return Container(
-        child: Align(
-          alignment: AlignmentDirectional.centerEnd,
-          child: Container(
-              decoration: BoxDecoration(
-                color: defaultColor.withOpacity(0.2,),
-                borderRadius: const BorderRadiusDirectional.only(
-                  bottomEnd: Radius.circular(10.0,),
-                  topStart: Radius.circular(10.0,),
-                  topEnd: Radius.circular(10.0,),
-                ),
-              ),
-              padding: const EdgeInsets.symmetric(
-                vertical: 5.0,
-                horizontal: 10.0,
-              ),
-              child:
-              Image.network(
-                model.image!,
-                height: 200.0,
-                width: 200.0,
-                fit: BoxFit.fill,
-              )
-          ),
-        ),
-      );
-    }
-      return Align(
-      alignment: AlignmentDirectional.centerEnd,
-      child: Container(
-        decoration: BoxDecoration(
-          color: defaultColor.withOpacity(0.2,),
-          borderRadius: const BorderRadiusDirectional.only(
-            bottomEnd: Radius.circular(10.0,),
-            topStart: Radius.circular(10.0,),
-            topEnd: Radius.circular(10.0,),
-          ),
-        ),
-        padding: const EdgeInsets.symmetric(
-          vertical: 5.0,
-          horizontal: 10.0,
-        ),
-        child: Text(model.text!)
-      ),
-    );
-  }
+ }
 
-class GoToBottomButton extends StatelessWidget {
-  final ScrollController scrollController;
 
-  const GoToBottomButton({required this.scrollController});
 
-  @override
-  Widget build(BuildContext context) {
-    return Visibility(
-      visible: scrollController.offset > 0,
-      child: Align(
-        alignment: Alignment.bottomRight,
-        child: Positioned(
-          child: FloatingActionButton(
-            onPressed: () {
-              scrollController.animateTo(
-                scrollController.position.maxScrollExtent,
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.easeInOut,
-              );
-            },
-            child: const Icon(Icons.arrow_downward),
-          ),
-        ),
-      ),
-    );
 
-  }
-}
 
 //   Widget buildWarningMessage() => Align(
 //     alignment: AlignmentDirectional.centerEnd,
@@ -372,7 +459,7 @@ class GoToBottomButton extends StatelessWidget {
 //             width: 15.0,
 //           ),
 //           Text(
-//             'This is Cyberbulling'+' ('+QueryText.toString()+')',
+//             'This is Cyberbullying'+' ('+QueryText.toString()+' + 'Message won't go')',
 //             style: const TextStyle(
 //               color: Colors.white,
 //             ),

@@ -5,12 +5,14 @@ class MessageModel
   String? dateTime;
   String? text;
   String? image;
+  bool? isBullying;
   MessageModel({
    this.senderId,
     this.receiverId,
     this.dateTime,
     this.text,
     this.image,
+    this.isBullying,
   });
   MessageModel.fromJson(Map<String,dynamic> json)
   {
@@ -19,6 +21,8 @@ class MessageModel
     dateTime = json['dateTime'];
     text = json['text'];
     image = json['image'];
+    isBullying = json['isBullying'];
+
   }
 
   Map<String,dynamic> toMap()
@@ -29,6 +33,7 @@ class MessageModel
       'dateTime' : dateTime,
       'text' : text,
       'image' : image,
+      'isBullying' : isBullying,
     };
   }
 

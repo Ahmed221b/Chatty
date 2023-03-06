@@ -18,6 +18,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'modules/social_app/splash_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -27,7 +29,42 @@ void main() async {
   Widget widget;
   uId = CacheHelper.getData(key: 'uId');
   if(uId != null){
-    widget = SocialLayout();
+    widget = MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          elevation: 0.0,
+          iconTheme: IconThemeData(
+            color: Colors.black,
+          ),
+          titleTextStyle: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+            fontWeight: FontWeight.bold,
+          ),
+          backwardsCompatibility: false,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.white,
+            statusBarIconBrightness: Brightness.dark,
+          ),
+        ),
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          type: BottomNavigationBarType.fixed,
+          selectedItemColor: defaultColor,
+          unselectedItemColor: Colors.grey,
+          elevation: 20.0,
+          backgroundColor: Colors.white,
+        ) ,
+      ),
+      title: 'My Chat App',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => SplashScreen(),
+        '/chat': (context) => SocialLayout(),
+      },
+    );
   }
   else{
     widget = SocialLoginScreen();
@@ -48,37 +85,10 @@ class MyApp extends StatelessWidget
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (BuildContext context) => SocialCubit()..getUserData()..getUsers(),),
+          BlocProvider(create: (BuildContext context) => SocialCubit()..getUserData()..getUsers(),),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.white,
-            elevation: 0.0,
-            iconTheme: IconThemeData(
-              color: Colors.black,
-            ),
-            titleTextStyle: TextStyle(
-              color: Colors.black,
-              fontSize: 20.0,
-              fontWeight: FontWeight.bold,
-            ),
-            backwardsCompatibility: false,
-            systemOverlayStyle: SystemUiOverlayStyle(
-              statusBarColor: Colors.white,
-              statusBarIconBrightness: Brightness.dark,
-            ),
-          ),
-          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-            type: BottomNavigationBarType.fixed,
-            selectedItemColor: defaultColor,
-            unselectedItemColor: Colors.grey,
-            elevation: 20.0,
-            backgroundColor: Colors.white,
-          ) ,
-        ),
         home: startWidget,
       ),
     );

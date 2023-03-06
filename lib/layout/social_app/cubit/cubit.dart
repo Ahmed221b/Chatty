@@ -35,6 +35,7 @@ class SocialCubit extends Cubit<SocialStates>{
     });
   }
 
+  bool isWarning = false;
   int currentIndex = 0;
   List<Widget> Screens = [
     ChatsScreen(),
@@ -43,9 +44,14 @@ class SocialCubit extends Cubit<SocialStates>{
   ];
   List<String> titles = [
     'Chats',
-    'Users',
-    'Settings',
+    'Contacts',
+    'Profile',
   ];
+
+  void changeWarningVariable(bool val)
+  {
+    isWarning = !val;
+  }
 
   void changeBottomNav(int index){
 
@@ -248,6 +254,7 @@ class SocialCubit extends Cubit<SocialStates>{
     required String dateTime,
     required String text,
     required String image,
+    required bool warning
   })
   {
     MessageModel model = MessageModel(
@@ -256,6 +263,7 @@ class SocialCubit extends Cubit<SocialStates>{
       dateTime: dateTime,
       text: text,
       image: image,
+      isBullying: warning,
     );
     FirebaseFirestore.instance
     .collection('users')
