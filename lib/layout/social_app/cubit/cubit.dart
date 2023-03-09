@@ -126,7 +126,7 @@ class SocialCubit extends Cubit<SocialStates>{
         print(value.toString());
         messageImg = value;
         print(messageImg);
-
+        emit(SocialUploadMessageImageSuccessState());
       }).catchError((error){
         emit(SocialUploadMessageImageErrorState());
       });

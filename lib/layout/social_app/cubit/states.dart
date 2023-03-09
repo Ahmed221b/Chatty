@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+  import 'package:flutter/cupertino.dart';
 
 abstract class SocialStates {}
 
@@ -43,3 +43,4 @@ class SocialGetAllUsersErrorState extends SocialStates
 class SocialSendMessageSuccessState extends SocialStates{}
 class SocialSendMessageErrorState extends SocialStates{}
 class SocialGetMessagesSuccessState extends SocialStates{}
+  class SocialRecieveMessageSuccessState extends SocialStates{}
