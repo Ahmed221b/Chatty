@@ -20,11 +20,23 @@ class SocialCubit extends Cubit<SocialStates>{
   SocialCubit() : super(SocialInitialState());
 
   static SocialCubit get(context) => BlocProvider.of(context);
-  SocialUserModel? userModel;
+  SocialUserModel userModel = socialUserModel;
+
+
+  //LOG OUT DEPENDENT
+  // void clearUserModel() {
+  //   userModel.uId='';
+  //   userModel.cover='';
+  //   userModel.image='';
+  //   userModel.email='';
+  //   userModel.name='';
+  //   userModel.phone='';
+  // }
+
   void getUserData(){
     emit(SocialGetUserLoadingState());
 
-    FirebaseFirestore.instance.collection('users').doc(uId).get()
+    FirebaseFirestore.instance.collection('users').doc(loggedID).get()
         .then((value) {
           userModel = SocialUserModel.fromJson(value.data()!);
           emit(SocialGetUserSuccessState());
@@ -238,7 +250,7 @@ class SocialCubit extends Cubit<SocialStates>{
 
     FirebaseFirestore.instance.collection('users').get().then((value) {
       value.docs.forEach((element) {
-        if(element.data()['uId'] != userModel!.uId) {
+        if(element.data()['uId'] != userModel.uId) {
           users.add(SocialUserModel.fromJson(element.data()));
         }
       });

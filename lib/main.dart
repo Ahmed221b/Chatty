@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:first_app/layout/social_app/cubit/cubit.dart';
 import 'package:first_app/layout/social_app/social_layout.dart';
 import 'package:first_app/modules/social_app/chats/chats_screen.dart';
+import 'package:first_app/modules/social_app/settings/settings_screen.dart';
 
 import 'package:first_app/modules/social_app/social_login/social_login_screen.dart';
 import 'package:first_app/modules/social_app/social_register/social_register_screen.dart';
@@ -27,8 +28,8 @@ void main() async {
     await CacheHelper.init();
 
   Widget widget;
-  uId = CacheHelper.getData(key: 'uId');
-  if(uId != null){
+  loggedID = CacheHelper.getData(key: 'uId');
+  if(loggedID != null){
     widget = MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

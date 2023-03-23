@@ -43,5 +43,15 @@ class SocialUserModel
       'isEmailVerified' : isEmailVerified,
     };
   }
+  void clear()
+  {
+    name='';
+    email='';
+    cover='';
+    image ='';
+    bio='';
+    phone='';
+    uId='';
+  }
 
 }

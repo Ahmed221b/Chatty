@@ -38,7 +38,7 @@ class SettingsScreen extends StatelessWidget {
                           ),
                           image: DecorationImage(
                             image: NetworkImage(
-                              '${userModel!.cover}',
+                              userModel!.cover ?? '',
                             ),
                             fit: BoxFit.cover,
                           ),

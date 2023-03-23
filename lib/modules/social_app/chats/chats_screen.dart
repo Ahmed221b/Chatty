@@ -13,22 +13,28 @@ class ChatsScreen extends StatelessWidget {
     return BlocConsumer<SocialCubit,SocialStates>(
       listener: (context,state){},
       builder: (context,state){
-        return ConditionalBuilder(
-          condition:SocialCubit.get(context).users.length >= 0,
-          builder: (context) => ListView.separated(
-            physics: const BouncingScrollPhysics(),
-            itemBuilder: (context,index) => buildChatItem(SocialCubit.get(context).users[index],context),
-            separatorBuilder: (context,index) => myDivider(),
-            itemCount: SocialCubit.get(context).users.length,
-          ),
-          fallback: (context) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                CircularProgressIndicator(),
-                SizedBox(height: 10),
-                Text('Loading...'),
-              ],
+        return RefreshIndicator(
+          onRefresh: () async{
+              // SocialCubit.get(context).users.clear();
+              // SocialCubit.get(context).getUsers();
+          },
+          child: ConditionalBuilder(
+            condition:SocialCubit.get(context).users.length >= 0,
+            builder: (context) => ListView.separated(
+              physics: const BouncingScrollPhysics(),
+              itemBuilder: (context,index) => buildChatItem(SocialCubit.get(context).users[index],context),
+              separatorBuilder: (context,index) => myDivider(),
+              itemCount: SocialCubit.get(context).users.length,
+            ),
+            fallback: (context) => Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 10),
+                  Text('Loading...'),
+                ],
+              ),
             ),
           ),
         );

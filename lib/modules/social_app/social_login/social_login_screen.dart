@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../../../shared/components/constants.dart';
+
 class SocialLoginScreen  extends StatelessWidget {
 
   var formkey = GlobalKey<FormState>();
@@ -59,7 +61,7 @@ class SocialLoginScreen  extends StatelessWidget {
                           color: Colors.black,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 10.0,
                         ),
                         Text(
@@ -68,7 +70,7 @@ class SocialLoginScreen  extends StatelessWidget {
                             color: Colors.grey,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30.0,
                         ),
                         defaultTextForm(
@@ -83,7 +85,7 @@ class SocialLoginScreen  extends StatelessWidget {
                           label: 'email address',
                           prefix: Icons.email_outlined,
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 15.0,
                         ),
                         defaultTextForm(
@@ -103,7 +105,7 @@ class SocialLoginScreen  extends StatelessWidget {
                             SocialLoginCubit.get(context).changePasswordVisibilty();
                           },
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 30.0,
                         ),
                         ConditionalBuilder(
@@ -114,6 +116,7 @@ class SocialLoginScreen  extends StatelessWidget {
                                   SocialLoginCubit.get(context).userLogin(
                                     email: emailController.text,
                                     password: passwordController.text,
+                                    context: context,
                                   );
                                 }
                               },

@@ -22,62 +22,80 @@ class ImageUploaded extends StatelessWidget {
     return BlocConsumer<SocialCubit, SocialStates>(
       listener: (context, state) {},
       builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              'Image',
+        return Theme(
+          data:  ThemeData(
+            scaffoldBackgroundColor: Colors.white,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Colors.white,
+              elevation: 0.0,
+              iconTheme: IconThemeData(
+                color: Colors.black,
+              ),
+              titleTextStyle: TextStyle(
+                color: Colors.black,
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+              ),
+              backwardsCompatibility: false,
             ),
           ),
-          body: ConditionalBuilder(
-            condition: state is SocialUploadMessageImageSuccessState && messageImg != '',
-            builder: (context) => Stack(
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Card(
-                        borderOnForeground: true,
-                        child: Image.network(
-                          messageImg ?? '',
-                          fit: BoxFit.cover,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text(
+                'Image',
+              ),
+            ),
+            body: ConditionalBuilder(
+              condition: state is SocialUploadMessageImageSuccessState && messageImg != '',
+              builder: (context) => Stack(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: Card(
+                          borderOnForeground: true,
+                          child: Image.network(
+                            messageImg ?? '',
+                            fit: BoxFit.cover,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Positioned(
-                  bottom: 16.0,
-                  right: 16.0,
-                  child: FloatingActionButton(
-                    mini: true,
-                    onPressed: ()
-                    {
-                      if (messageImg != null)
-                      {
-                        SocialCubit.get(context).sendMessage(
-                          receiverId: userModel!.uId!,
-                          dateTime: DateTime.now().toString(),
-                          text: message1!,
-                          image: messageImg ?? '',
-                          warning: false,
-                        );
-                        messageImg = null;
-                        // Scroll to the last message
-                        //0scrollDown();
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please enter some text or select an image.')),
-                        );
-                      }
-                      Navigator.pop(context);
-                    },
-                    child: Icon(IconBroken.Send),
+                    ],
                   ),
-                ),
-              ],
+                  Positioned(
+                    bottom: 16.0,
+                    right: 16.0,
+                    child: FloatingActionButton(
+                      mini: true,
+                      onPressed: ()
+                      {
+                        if (messageImg != null)
+                        {
+                          SocialCubit.get(context).sendMessage(
+                            receiverId: userModel!.uId!,
+                            dateTime: DateTime.now().toString(),
+                            text: message1!,
+                            image: messageImg ?? '',
+                            warning: false,
+                          );
+                          messageImg = null;
+                          // Scroll to the last message
+                          //0scrollDown();
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Please enter some text or select an image.')),
+                          );
+                        }
+                        Navigator.pop(context);
+                      },
+                      child: Icon(IconBroken.Send),
+                    ),
+                  ),
+                ],
+              ),
+              fallback: (context) => Center(child: CircularProgressIndicator()),
             ),
-            fallback: (context) => Center(child: CircularProgressIndicator()),
           ),
         );
       },

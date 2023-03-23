@@ -1,5 +1,6 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:first_app/layout/social_app/social_layout.dart';
+import 'package:first_app/modules/social_app/social_login/social_login_screen.dart';
 import 'package:first_app/modules/social_app/social_register/cubit/cubit.dart';
 import 'package:first_app/modules/social_app/social_register/cubit/states.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class RegisterScreen  extends StatelessWidget {
         {
           if(state is SocialCreateUserSuccessState)
           {
-            navigateAndfFinish(context, SocialLayout());
+            navigateAndfFinish(context, SocialLoginScreen());
           }
         },
         builder: (context,state){
