@@ -7,14 +7,30 @@ import 'package:first_app/shared/components/constants.dart';
 import 'package:first_app/shared/styles/icon_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 import '../../../models/social_app/social_user_model.dart';
 
 class ImageUploaded extends StatelessWidget {
   SocialUserModel? userModel;
   String? message1 = '';
-
+  var imageLabel ;
   ImageUploaded({super.key,this.userModel,});
+
+
+  Future<String> predictimage(String imageUrl) async {
+    final endpointUrl = 'http://192.168.1.32:5000/image?imageUrl=$imageUrl';
+
+    final response = await http.get(Uri.parse(endpointUrl));
+    if (response.statusCode == 200) {
+      final result = json.decode(response.body)['prediction'];
+      return result;
+    } else {
+      throw Exception('Failed to load prediction');
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -69,24 +85,51 @@ class ImageUploaded extends StatelessWidget {
                     child: FloatingActionButton(
                       mini: true,
                       onPressed: ()
-                      {
-                        if (messageImg != null)
-                        {
-                          SocialCubit.get(context).sendMessage(
-                            receiverId: userModel!.uId!,
-                            dateTime: DateTime.now().toString(),
-                            text: message1!,
-                            image: messageImg ?? '',
-                            warning: false,
-                          );
-                          messageImg = null;
-                          // Scroll to the last message
-                          //0scrollDown();
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please enter some text or select an image.')),
-                          );
-                        }
+                      async{
+                        final encodedUrl = Uri.encodeComponent(messageImg!);
+                        imageLabel = await predictimage(encodedUrl);
+                        if (imageLabel != 'not_cyberbullying')
+                          {
+                            if (messageImg != null)
+                            {
+                              SocialCubit.get(context).sendMessage(
+                                receiverId: userModel!.uId!,
+                                dateTime: DateTime.now().toString(),
+                                text: message1!,
+                                image: messageImg ?? '',
+                                warning: true,
+                              );
+                              messageImg = null;
+                              // Scroll to the last message
+                              //0scrollDown();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Please enter some text or select an image.')),
+                              );
+                            }
+                          }
+                        else
+                          {
+                            if (messageImg != null)
+                            {
+                              SocialCubit.get(context).sendMessage(
+                                receiverId: userModel!.uId!,
+                                dateTime: DateTime.now().toString(),
+                                text: message1!,
+                                image: messageImg ?? '',
+                                warning: false,
+                              );
+                              messageImg = null;
+                              // Scroll to the last message
+                              //0scrollDown();
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Please enter some text or select an image.')),
+                              );
+                            }
+
+                          }
+
                         Navigator.pop(context);
                       },
                       child: Icon(IconBroken.Send),
