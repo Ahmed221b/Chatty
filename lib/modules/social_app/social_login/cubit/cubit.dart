@@ -52,10 +52,7 @@ class SocialLoginCubit extends Cubit<SocialLoginStates>
     {
       print(value.user!.email);
       print(value.user!.uid);
-
-      //LOGOUT DEPENDENT
-      // loggedID = value.user!.uid;
-      // SocialCubit.get(context).getUserData();
+      loggedID = value.user!.uid;
       emit(SocialLoginSuccessState(value.user!.uid));
     })
         .catchError((error)
