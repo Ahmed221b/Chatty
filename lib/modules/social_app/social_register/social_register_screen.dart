@@ -31,119 +31,137 @@ class RegisterScreen  extends StatelessWidget {
           }
         },
         builder: (context,state){
-          return Scaffold(
-            appBar: AppBar(),
-            body: Center(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Form(
-                    key: formkey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'REGISTER',
-                          style: Theme.of(context).textTheme.headline4?.copyWith(
-                            color: Colors.black,
+          return Theme(
+            data: ThemeData(
+              scaffoldBackgroundColor: Colors.white,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.white,
+                elevation: 0.0,
+                iconTheme: IconThemeData(
+                  color: Colors.black,
+                ),
+                titleTextStyle: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                backwardsCompatibility: false,
+              ),
+            ),
+            child: Scaffold(
+              appBar: AppBar(),
+              body: Center(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Form(
+                      key: formkey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'REGISTER',
+                            style: Theme.of(context).textTheme.headline4?.copyWith(
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        Text(
-                          'Register now to communicate with friends',
-                          style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                            color: Colors.grey,
+                          const SizedBox(
+                            height: 10.0,
                           ),
-                        ),
-                        SizedBox(
-                          height: 30.0,
-                        ),
-                        defaultTextForm(
-                          controller: nameController,
-                          type: TextInputType.name,
-                          validate: (value){
-                            if(value!.isEmpty){
-                              return 'PLease enter your name';
-                            }
-                            return null;
-                          },
-                          label: 'User Name',
-                          prefix: Icons.person,
-                        ),
-                        SizedBox(
-                          height: 15.0,
-                        ),
-                        defaultTextForm(
-                          controller: emailController,
-                          type: TextInputType.emailAddress,
-                          validate: (value){
-                            if(value!.isEmpty){
-                              return 'PLease enter your email address';
-                            }
-                            return null;
-                          },
-                          label: 'email address',
-                          prefix: Icons.email_outlined,
-                        ),
-                        SizedBox(
-                          height: 15.0,
-                        ),
-                        defaultTextForm(
-                          controller: passwordController,
-                          type: TextInputType.visiblePassword,
-                          validate: (String? value){
-                            if(value!.isEmpty){
-                              return 'PLease enter your password';
-                            }
-                            return null;
-                          },
-                          label: 'Password',
-                          prefix: Icons.lock_outline,
-                          suffix: SocialRegisterCubit.get(context).suffix,
-                          ispassword: SocialRegisterCubit.get(context).isPassword,
-                          suffixPressed: (){
-                            SocialRegisterCubit.get(context).changePasswordVisibility();
-                          },
-                        ),
-                        SizedBox(
-                          height: 15.0,
-                        ),
-                        defaultTextForm(
-                          controller: phoneController,
-                          type: TextInputType.phone,
-                          validate: (value){
-                            if(value!.isEmpty){
-                              return 'PLease enter your phone number';
-                            }
-                            return null;
-                          },
-                          label: 'Phone',
-                          prefix: Icons.phone,
-                        ),
-                        SizedBox(
-                          height: 30.0,
-                        ),
-                        ConditionalBuilder(
-                          condition: state is! SocialRegisterLoadingState,
-                          builder: (context) => defaultButton(
-                            function: (){
-                              if(formkey.currentState!.validate()) {
-                                SocialRegisterCubit.get(context).userRegister(
-                                  name: nameController.text,
-                                  email: emailController.text,
-                                  password: passwordController.text,
-                                  phone: phoneController.text,
-                                );
+                          Text(
+                            'Register now to communicate with friends',
+                            style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 30.0,
+                          ),
+                          defaultTextForm(
+                            controller: nameController,
+                            type: TextInputType.name,
+                            validate: (value){
+                              if(value!.isEmpty){
+                                return 'PLease enter your name';
                               }
+                              return null;
                             },
-                            text: 'register',
-                            upper: true,
+                            label: 'User Name',
+                            prefix: Icons.person,
                           ),
-                          fallback:(context) => Center(child: CircularProgressIndicator()),
-                        ),
-                      ],
+                          const SizedBox(
+                            height: 15.0,
+                          ),
+                          defaultTextForm(
+                            controller: emailController,
+                            type: TextInputType.emailAddress,
+                            validate: (value){
+                              if(value!.isEmpty){
+                                return 'PLease enter your email address';
+                              }
+                              return null;
+                            },
+                            label: 'email address',
+                            prefix: Icons.email_outlined,
+                          ),
+                          const SizedBox(
+                            height: 15.0,
+                          ),
+                          defaultTextForm(
+                            controller: passwordController,
+                            type: TextInputType.visiblePassword,
+                            validate: (String? value){
+                              if(value!.isEmpty){
+                                return 'PLease enter your password';
+                              }
+                              return null;
+                            },
+                            label: 'Password',
+                            prefix: Icons.lock_outline,
+                            suffix: SocialRegisterCubit.get(context).suffix,
+                            ispassword: SocialRegisterCubit.get(context).isPassword,
+                            suffixPressed: (){
+                              SocialRegisterCubit.get(context).changePasswordVisibility();
+                            },
+                          ),
+                          const SizedBox(
+                            height: 15.0,
+                          ),
+                          defaultTextForm(
+                            controller: phoneController,
+                            type: TextInputType.phone,
+                            validate: (value){
+                              if(value!.isEmpty){
+                                return 'PLease enter your phone number';
+                              }
+                              return null;
+                            },
+                            label: 'Phone',
+                            prefix: Icons.phone,
+                          ),
+                          const SizedBox(
+                            height: 30.0,
+                          ),
+                          ConditionalBuilder(
+                            condition: state is! SocialRegisterLoadingState,
+                            builder: (context) => defaultButton(
+                              function: (){
+                                if(formkey.currentState!.validate()) {
+                                  SocialRegisterCubit.get(context).userRegister(
+                                    name: nameController.text,
+                                    email: emailController.text,
+                                    password: passwordController.text,
+                                    phone: phoneController.text,
+                                  );
+                                }
+                              },
+                              text: 'register',
+                              upper: true,
+                            ),
+                            fallback:(context) => Center(child: CircularProgressIndicator()),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

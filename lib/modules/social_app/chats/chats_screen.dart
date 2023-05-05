@@ -9,42 +9,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ChatsScreen extends StatelessWidget {
+  final _scrollController = ScrollController();
+
   @override
   Widget build(BuildContext context) {
+    print(loggedID);
     return BlocConsumer<SocialCubit,SocialStates>(
       listener: (context,state){},
       builder: (context,state){
-        return RefreshIndicator(
-          onRefresh: () async{
-              // SocialCubit.get(context).users.clear();
-              // SocialCubit.get(context).getUsers();
-          },
-          child: ConditionalBuilder(
-            condition:SocialCubit.get(context).users.length >= 0,
-            builder: (context) => ListView.separated(
-              physics: const BouncingScrollPhysics(),
-              itemBuilder: (context,index){
-                final user = SocialCubit.get(context).users[index];
-                if (user.uId == loggedID) {
-                  return SizedBox.shrink(); // exclude the logged in user
-                }
-                return buildChatItem(user,context);
-              },
-              separatorBuilder: (context,index) => myDivider(),
-              itemCount: SocialCubit.get(context).users.length,
-            ),
-            fallback: (context) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 10),
-                  Text('Loading...'),
-                ],
+        return ConditionalBuilder(
+              condition: SocialCubit.get(context).users.isNotEmpty,
+              builder: (context) => ListView.separated(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
+                itemBuilder: (context,index){
+                  final user = SocialCubit.get(context).users[index];
+                  if (user.uId == loggedID) {
+                    return const SizedBox.shrink(); // exclude the logged in user
+                  }
+                  return buildChatItem(user,context);
+                },
+                separatorBuilder: (context,index) => myDivider(),
+                itemCount: SocialCubit.get(context).users.length,
               ),
-            ),
-          ),
-        );
+              fallback: (context) => Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 10),
+                    Text('Loading...'),
+                  ],
+                ),
+              ),
+            );
       },
     );
   }

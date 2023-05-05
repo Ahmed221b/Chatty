@@ -2,6 +2,7 @@ import 'package:first_app/models/social_app/social_user_model.dart';
 
 import '../../models/social_app/message_model.dart';
 
+
 String? loggedID = '';
 String? messageImg;
 bool isWarning = false;

@@ -3,6 +3,9 @@ abstract class SocialLoginStates {}
 class SocialLoginInitialState extends SocialLoginStates {}
 
 class SocialLoginLoadingState extends SocialLoginStates {}
+
+class SocialLogoutSuccessState extends SocialLoginStates {}
+
 class SocialLoginSuccessState extends SocialLoginStates
 {
   final String uId;

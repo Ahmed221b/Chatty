@@ -58,7 +58,7 @@ class SettingsScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 5.0,
               ),
               Text(
@@ -71,7 +71,7 @@ class SettingsScreen extends StatelessWidget {
                 '${userModel.bio}',
                 style: Theme.of(context).textTheme.caption,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 20.0,
               ),
               Row(
@@ -84,7 +84,7 @@ class SettingsScreen extends StatelessWidget {
                         },
                         child:Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                          children: const [
                             Text(
                               'Edit Profile',
                               style: TextStyle(

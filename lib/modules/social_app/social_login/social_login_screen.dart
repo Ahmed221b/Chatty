@@ -16,10 +16,13 @@ class SocialLoginScreen  extends StatelessWidget {
   var formkey = GlobalKey<FormState>();
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
+  final FocusNode emailFocusNode = FocusNode();
+  final FocusNode passwordFocusNode = FocusNode();
+
 
   @override
   Widget build(BuildContext context) {
-
+    FocusManager.instance.primaryFocus?.unfocus();
     return BlocProvider(
       create: (BuildContext context) => SocialLoginCubit(),
       child: BlocConsumer<SocialLoginCubit,SocialLoginStates>(
@@ -44,73 +47,100 @@ class SocialLoginScreen  extends StatelessWidget {
           }
         },
         builder: (context,state) {
-          return Scaffold(
-            appBar: AppBar(),
-            body: Center(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Form(
-                    key: formkey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'LOGIN',
-                          style: Theme.of(context).textTheme.headline4?.copyWith(
-                          color: Colors.black,
+          return Theme(
+            data: ThemeData(
+              scaffoldBackgroundColor: Colors.white,
+              appBarTheme: const AppBarTheme(
+                backgroundColor: Colors.white,
+                elevation: 0.0,
+                iconTheme: IconThemeData(
+                  color: Colors.black,
+                ),
+                titleTextStyle: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                backwardsCompatibility: false,
+              ),
+            ),
+            child: Scaffold(
+              appBar: AppBar(),
+              body: Center(
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Form(
+                      key: formkey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'LOGIN',
+                            style: Theme.of(context).textTheme.headline4?.copyWith(
+                              color: Colors.black,
+                            ),
                           ),
-                        ),
-                        const SizedBox(
-                          height: 10.0,
-                        ),
-                        Text(
-                          'Login now to communicate with friends',
-                          style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                            color: Colors.grey,
+                          const SizedBox(
+                            height: 10.0,
                           ),
-                        ),
-                        const SizedBox(
-                          height: 30.0,
-                        ),
-                        defaultTextForm(
-                          controller: emailController,
-                          type: TextInputType.emailAddress,
-                          validate: (value){
-                            if(value!.isEmpty){
-                              return 'PLease enter your email address';
-                            }
-                            return null;
-                          },
-                          label: 'email address',
-                          prefix: Icons.email_outlined,
-                        ),
-                        const SizedBox(
-                          height: 15.0,
-                        ),
-                        defaultTextForm(
-                          controller: passwordController,
-                          type: TextInputType.visiblePassword,
-                          validate: (String? value){
-                            if(value!.isEmpty){
-                              return 'PLease enter your password';
-                            }
-                            return null;
-                          },
-                          label: 'Password',
-                          prefix: Icons.lock_outline,
-                          suffix: SocialLoginCubit.get(context).suffix,
-                          ispassword: SocialLoginCubit.get(context).isPassword,
-                          suffixPressed: (){
-                            SocialLoginCubit.get(context).changePasswordVisibilty();
-                          },
-                        ),
-                        const SizedBox(
-                          height: 30.0,
-                        ),
-                        ConditionalBuilder(
-                          condition: state is! SocialLoginLoadingState,
-                          builder: (context) => defaultButton(
+                          Text(
+                            'Login now to communicate with friends',
+                            style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 30.0,
+                          ),
+                          TextFormField(
+                            controller: emailController,
+                            keyboardType: TextInputType.emailAddress,
+                            validator: (value){
+                              if(value!.isEmpty){
+                                return 'PLease enter your email address';
+                              }
+                              return null;
+                            },
+                            decoration: const InputDecoration(
+                              labelText: 'email address',
+                              prefixIcon: Icon(Icons.email_outlined),
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15.0,
+                          ),
+                          TextFormField(
+                            controller: passwordController,
+                            keyboardType: TextInputType.visiblePassword,
+                            validator: (value){
+                              if(value!.isEmpty){
+                                return 'PLease enter your password';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              labelText: 'Password',
+                              prefixIcon: Icon(Icons.lock_outline),
+                              suffixIcon: IconButton(
+                                onPressed: (){
+                                  SocialLoginCubit.get(context).changePasswordVisibilty();
+                                },
+                                icon: Icon(
+                                  SocialLoginCubit.get(context).suffix,
+                                ),
+                              ),
+                              border: OutlineInputBorder(),
+                            ),
+                            obscureText: SocialLoginCubit.get(context).isPassword,
+                          ),
+                          const SizedBox(
+                            height: 30.0,
+                          ),
+                          ConditionalBuilder(
+                            condition: state is! SocialLoginLoadingState,
+                            builder: (context) => defaultButton(
                               function: (){
                                 if(formkey.currentState!.validate()) {
                                   SocialLoginCubit.get(context).userLogin(
@@ -122,31 +152,32 @@ class SocialLoginScreen  extends StatelessWidget {
                               },
                               text: 'login',
                               upper: true,
+                            ),
+                            fallback:(context) => Center(child: CircularProgressIndicator()),
                           ),
-                          fallback:(context) => Center(child: CircularProgressIndicator()),
-                        ),
-                        SizedBox(
-                          height: 15.0,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Don\'t have an account?',
-                            ),
-                            defaultTextButton(
-                              function: ()
-                              {
-                                navigateTo(
-                                  context,
-                                  RegisterScreen(),
-                                );
-                              },
-                              text: 'register',
-                            ),
-                          ],
-                        ),
-                      ],
+                          SizedBox(
+                            height: 15.0,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Don\'t have an account?',
+                              ),
+                              defaultTextButton(
+                                function: ()
+                                {
+                                  navigateTo(
+                                    context,
+                                    RegisterScreen(),
+                                  );
+                                },
+                                text: 'register',
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

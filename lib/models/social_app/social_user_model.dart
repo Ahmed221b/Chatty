@@ -8,8 +8,18 @@ class SocialUserModel
   String? image;
   String? cover;
   String? bio;
+  bool? isBanned;
+  int? ageCounter;
+  int? religionCounter;
+  int? genderCounter;
+  int? ethnicityCounter;
+  int? otherCounter;
+  int? numberOfBans;
+  int? sumOfCounters;
+  DateTime? banEntTime;
+
   SocialUserModel({
-   this.email,
+    this.email,
     this.phone,
     this.name,
     this.uId,
@@ -17,7 +27,19 @@ class SocialUserModel
     this.image,
     this.bio,
     this.cover,
+    this.isBanned,
+    this.ageCounter,
+    this.religionCounter,
+    this.genderCounter,
+    this.ethnicityCounter,
+    this.otherCounter,
+    this.numberOfBans,
+    this.sumOfCounters,
+    this.banEntTime,
+
   });
+
+
   SocialUserModel.fromJson(Map<String,dynamic> json)
   {
     email = json['email'];
@@ -28,11 +50,21 @@ class SocialUserModel
     isEmailVerified = json['isEmailVerified'];
     bio = json['bio'];
     cover = json['cover'];
+    isBanned = json['isBanned'];
+    ageCounter = json['ageCounter'];
+    religionCounter = json['religionCounter'];
+    ethnicityCounter = json['ethnicityCounter'];
+    genderCounter = json['genderCounter'];
+    otherCounter = json['otherCounter'];
+    numberOfBans = json['numberOfBans'];
+    sumOfCounters = json['sumOfCounters'];
+    banEntTime = json['banEntTime'];
   }
+
 
   Map<String,dynamic> toMap()
   {
-    return {
+    return {  
       'name' : name,
       'email' : email,
       'phone' : phone,
@@ -40,18 +72,19 @@ class SocialUserModel
       'image' : image,
       'bio' : bio,
       'cover' : cover,
+      'banEntTime':banEntTime,
       'isEmailVerified' : isEmailVerified,
+      'isBanned': isBanned ?? false,
+      'ageCounter': ageCounter ?? 0,
+      'genderCounter': genderCounter ?? 0,
+      'religionCounter': religionCounter ?? 0,
+      'ethnicityCounter': ethnicityCounter ?? 0,
+      'otherCounter': otherCounter ?? 0,
+      'numberOfBans': numberOfBans??0,
+      'sumOfCounters' : sumOfCounters??0,
+
     };
   }
-  void clear()
-  {
-    name='';
-    email='';
-    cover='';
-    image ='';
-    bio='';
-    phone='';
-    uId='';
-  }
+
 
 }

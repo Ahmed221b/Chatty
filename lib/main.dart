@@ -19,6 +19,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'modules/social_app/chat_details/chat_details_screen.dart';
 import 'modules/social_app/splash_screen.dart';
 
 void main() async {
@@ -64,6 +65,7 @@ void main() async {
       routes: {
         '/': (context) => SplashScreen(),
         '/chat': (context) => SocialLayout(),
+        '/social_login_screen': (context) => SocialLoginScreen(),
       },
     );
   }

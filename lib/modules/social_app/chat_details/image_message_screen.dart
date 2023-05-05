@@ -73,7 +73,7 @@ class ImageUploaded extends StatelessWidget {
                           borderOnForeground: true,
                           child: Image.network(
                             messageImg ?? '',
-                            fit: BoxFit.cover,
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),
@@ -84,8 +84,7 @@ class ImageUploaded extends StatelessWidget {
                     right: 16.0,
                     child: FloatingActionButton(
                       mini: true,
-                      onPressed: ()
-                      async{
+                      onPressed: () async{
                         final encodedUrl = Uri.encodeComponent(messageImg!);
                         imageLabel = await predictimage(encodedUrl);
                         if (imageLabel != 'not_cyberbullying')
@@ -145,3 +144,6 @@ class ImageUploaded extends StatelessWidget {
     );
   }
 }
+
+// final encodedUrl = Uri.encodeComponent(messageImg!);
+// imageLabel = await predictimage(encodedUrl);

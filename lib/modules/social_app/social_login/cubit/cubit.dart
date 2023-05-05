@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:first_app/layout/social_app/cubit/cubit.dart';
@@ -12,54 +13,57 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../main.dart';
 import '../../../../shared/components/components.dart';
+import '../../../../shared/network/local/chache_helper.dart';
 
 class SocialLoginCubit extends Cubit<SocialLoginStates>
 {
   SocialLoginCubit() : super(SocialLoginInitialState());
 
   static SocialLoginCubit get(context) => BlocProvider.of(context);
- //  void userLogin({
- //    required String email,
- //    required String password,
- //  })
- // {
- //   emit(SocialLoginLoadingState());
- //   FirebaseAuth.instance.signInWithEmailAndPassword(
- //       email: email,
- //       password: password,
- //   ).then((value)
- //   {
- //     print(value.user!.email);
- //     print(value.user!.uid);
- //     emit(SocialLoginSuccessState(value.user!.uid));
- //   })
- //       .catchError((error)
- //   {
- //     emit(SocialLoginErrorState(error.toString()));
- //   });
- // }
+
+
   void userLogin({
     required String email,
     required String password,
     required BuildContext context,
-  })
-  {
+  }) {
+    SocialCubit.get(context).clearUserModel();
+
     emit(SocialLoginLoadingState());
-    FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: email,
-      password: password,
-    ).then((value)
-    {
+    FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email, password: password)
+        .then((value) {
       print(value.user!.email);
       print(value.user!.uid);
       loggedID = value.user!.uid;
-      emit(SocialLoginSuccessState(value.user!.uid));
-    })
-        .catchError((error)
-    {
+      SocialCubit.get(context).getUserData();
+
+      // Check if the user is banned
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(loggedID)
+          .get()
+          .then((doc) {
+        if (doc.exists) {
+          var isBanned = doc.get('isBanned');
+          if (isBanned == true) {
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              content: Text('You are banned from logging in.'),
+            ));
+            emit(SocialLoginErrorState('User is banned.'));
+          } else {
+            emit(SocialLoginSuccessState(value.user!.uid));
+          }
+        }
+      }).catchError((error) {
+        emit(SocialLoginErrorState(error.toString()));
+      });
+    }).catchError((error) {
       emit(SocialLoginErrorState(error.toString()));
     });
   }
+
+
 
 
 

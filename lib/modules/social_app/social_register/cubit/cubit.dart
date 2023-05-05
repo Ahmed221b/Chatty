@@ -43,18 +43,25 @@ class SocialRegisterCubit extends Cubit<SocialRegisterStates>
     required String email,
     required String phone,
     required String uId,
+
   })
   {
       socialUserModel = SocialUserModel(
-      name: name,
-      email: email,
-      phone: phone,
-      uId: uId,
-      bio: '',
-      cover: 'https://img.freepik.com/free-photo/close-up-young-successful-man-smiling-camera-standing-casual-outfit-against-blue-background_1258-66609.jpg?w=996&t=st=1676499092~exp=1676499692~hmac=5d4f12cb876a133d021d0e08eb9d60cdd7daec9eff61f1cae0507775392e8689',
-      image: 'https://img.freepik.com/free-photo/close-up-young-successful-man-smiling-camera-standing-casual-outfit-against-blue-background_1258-66609.jpg?w=996&t=st=1676499092~exp=1676499692~hmac=5d4f12cb876a133d021d0e08eb9d60cdd7daec9eff61f1cae0507775392e8689',
-      isEmailVerified: false,
-    );
+        name: name,
+        email: email,
+        phone: phone,
+        uId: uId,
+        bio: '',
+        cover: 'https://img.freepik.com/free-photo/close-up-young-successful-man-smiling-camera-standing-casual-outfit-against-blue-background_1258-66609.jpg?w=996&t=st=1676499092~exp=1676499692~hmac=5d4f12cb876a133d021d0e08eb9d60cdd7daec9eff61f1cae0507775392e8689',
+        image: 'https://img.freepik.com/free-photo/close-up-young-successful-man-smiling-camera-standing-casual-outfit-against-blue-background_1258-66609.jpg?w=996&t=st=1676499092~exp=1676499692~hmac=5d4f12cb876a133d021d0e08eb9d60cdd7daec9eff61f1cae0507775392e8689',
+        isEmailVerified: false,
+        isBanned: false,
+        ageCounter: 0,
+        religionCounter: 0,
+        otherCounter: 0,
+        genderCounter: 0,
+        ethnicityCounter: 0,
+      );
 
     FirebaseFirestore.instance.collection('users').doc(uId).set(  socialUserModel.toMap())
         .then(

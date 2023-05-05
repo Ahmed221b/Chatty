@@ -23,15 +23,35 @@ class SocialCubit extends Cubit<SocialStates>{
   SocialUserModel userModel = socialUserModel;
 
 
-  //LOG OUT DEPENDENT
-  // void clearUserModel() {
-  //   userModel.uId='';
-  //   userModel.cover='';
-  //   userModel.image='';
-  //   userModel.email='';
-  //   userModel.name='';
-  //   userModel.phone='';
-  // }
+  // LOG OUT DEPENDENT
+  void clearUserModel() {
+    socialUserModel.uId='';
+    socialUserModel.cover='';
+    socialUserModel.image='';
+    socialUserModel.email='';
+    socialUserModel.name='';
+    socialUserModel.phone='';
+  }
+
+
+
+  Future<SocialUserModel?> getCurrentUserData(String userId) async {
+    try {
+      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
+      final docSnapshot = await docRef.get();
+
+      if (docSnapshot.exists) {
+        final userData = SocialUserModel.fromJson(docSnapshot.data()!);
+        return userData;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error retrieving user data for ID $userId: $e');
+      return null;
+    }
+  }
+
 
   void getUserData(){
     emit(SocialGetUserLoadingState());
@@ -194,7 +214,7 @@ class SocialCubit extends Cubit<SocialStates>{
       value.ref.getDownloadURL().then((value)
       {
         print(value);
-        updateUser(
+          updateUser(
           name: name,
           phone: phone,
           bio: bio,
@@ -210,11 +230,17 @@ class SocialCubit extends Cubit<SocialStates>{
 
 
   void updateUser({
-    required String name,
-    required String phone,
-    required String bio,
+    String? name,
+    String? phone,
+    String? bio,
+    int? genderCounter,
+    int? otherCounter,
+    int? religionCounter,
+    int? ageCounter,
+    int? ethincityCounter,
     String? cover,
     String? image,
+    bool? isBanned
   })
   {
     emit(SocialUserUpdateLoadingState());
@@ -227,6 +253,12 @@ class SocialCubit extends Cubit<SocialStates>{
       image: image??userModel!.image,
       cover: cover??userModel!.cover,
       isEmailVerified: false,
+      genderCounter: genderCounter,
+      religionCounter: religionCounter,
+      otherCounter: otherCounter,
+      ageCounter: ageCounter,
+      ethnicityCounter: ethincityCounter,
+      isBanned: isBanned,
     );
 
     FirebaseFirestore
@@ -331,6 +363,9 @@ class SocialCubit extends Cubit<SocialStates>{
           emit(SocialGetMessagesSuccessState());
     });
   }
+
+
+
 
 
 }

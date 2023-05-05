@@ -11,22 +11,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
 
+import '../../modules/social_app/social_login/cubit/states.dart';
 import '../../modules/social_app/social_login/social_login_screen.dart';
 import '../../shared/components/components.dart';
+import '../../shared/network/local/chache_helper.dart';
 
 class SocialLayout extends StatelessWidget {
 
-
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext buildContext) {
 
     return BlocConsumer<SocialCubit,SocialStates>(
       listener: (context,state){
-        // if (state is SocialGetUserSuccessState)
-        //   {
-        //     navigateTo(context, ChatsScreen());
-        //   }
+
       },
       builder: (context,state){
         var cubit = SocialCubit.get(context);
@@ -67,16 +64,19 @@ class SocialLayout extends StatelessWidget {
                     icon: const Icon(IconBroken.Search),
                 ),
                 IconButton(
-                    onPressed:() async {
-                      // FirebaseAuth.instance.signOut().then((value) {
-                      //   SocialCubit.get(context).clearUserModel();
-                      //   navigateAndfFinish(
-                      //      context,
-                      //      SocialLoginScreen(),
-                      //   );
-                      // });
-                    },
-                    icon: const Icon(Icons.logout)),
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    CacheHelper.removeData(key: 'uId');
+                    SocialCubit.get(context).clearUserModel();
+                    await FirebaseAuth.instance.authStateChanges().firstWhere((user) => user == null);
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => SocialLoginScreen()),
+                    );
+
+                  },
+                  icon: const Icon(Icons.logout),
+                ),
 
               ],
 
