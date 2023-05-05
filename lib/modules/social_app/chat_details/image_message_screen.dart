@@ -1,6 +1,11 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:first_app/layout/social_app/cubit/cubit.dart';
 import 'package:first_app/layout/social_app/cubit/states.dart';
+import 'package:first_app/modules/social_app/chat_details/ban_systen.dart';
 import 'package:first_app/modules/social_app/chat_details/chat_details_screen.dart';
 import 'package:first_app/shared/components/components.dart';
 import 'package:first_app/shared/components/constants.dart';
@@ -11,13 +16,19 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 import '../../../models/social_app/social_user_model.dart';
+import '../../../shared/network/local/chache_helper.dart';
+import '../social_login/social_login_screen.dart';
 
 class ImageUploaded extends StatelessWidget {
   SocialUserModel? userModel;
+  late SocialUserModel currentUser;
+  var url;
+  var queryText;
+  int sum = 0;
   String? message1 = '';
-  var imageLabel ;
   ImageUploaded({super.key,this.userModel,});
-
+  var messageController = TextEditingController();
+  BanSystem banSystem = BanSystem();
 
   Future<String> predictimage(String imageUrl) async {
     final endpointUrl = 'http://192.168.1.32:5000/image?imageUrl=$imageUrl';
@@ -30,6 +41,7 @@ class ImageUploaded extends StatelessWidget {
       throw Exception('Failed to load prediction');
     }
   }
+
 
 
   @override
@@ -84,52 +96,172 @@ class ImageUploaded extends StatelessWidget {
                     right: 16.0,
                     child: FloatingActionButton(
                       mini: true,
-                      onPressed: () async{
+                      onPressed: () async {
+                        currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                        sum = currentUser.sumOfCounters!;
                         final encodedUrl = Uri.encodeComponent(messageImg!);
-                        imageLabel = await predictimage(encodedUrl);
-                        if (imageLabel != 'not_cyberbullying')
-                          {
-                            if (messageImg != null)
-                            {
-                              SocialCubit.get(context).sendMessage(
+                        queryText = await predictimage(encodedUrl);
+                        if (currentUser.isBanned == false)
+                        {
+                          if (queryText != 'not_cyberbullying') {
+                            if (messageImg != null) {
+                              switch (queryText) {
+                                case 'age':
+                                  banSystem.updateUserCounter(loggedID!, CounterType.age, currentUser.ageCounter! + 1);
+                                  sum += 1;
+                                  currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                  if (currentUser.ageCounter == 3)
+                                  {
+                                    banSystem.tempBan(loggedID!, true);
+                                    banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                    banSystem.updateUserCounter(loggedID!, CounterType.age, 0);
+                                    currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                    if (currentUser.numberOfBans! >= 5)
+                                    {
+                                      banSystem.updateUserState(loggedID!, true);
+                                      banSystem.userLogout(context);
+                                      navigateAndfFinish(context, SocialLoginScreen());
+                                    }
+                                  }
+                                  break;
+                                case 'religion':
+                                  banSystem.updateUserCounter(loggedID!, CounterType.religion, currentUser.religionCounter! + 1);
+                                  sum += 1;
+                                  currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                  if (currentUser.religionCounter == 2)
+                                  {
+                                    banSystem.tempBan(loggedID!, true);
+                                    banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                    banSystem.updateUserCounter(loggedID!, CounterType.religion, 0);
+                                    currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                    if (currentUser.numberOfBans! >= 5)
+                                    {
+                                      banSystem.updateUserState(loggedID!, true);
+                                      banSystem.userLogout(context);
+                                      navigateAndfFinish(context, SocialLoginScreen());
+                                    }
+
+                                  }
+                                  break;
+                                case 'ethnicity':
+                                  banSystem.updateUserCounter(loggedID!, CounterType.ethnicity, currentUser.ethnicityCounter! + 1);
+                                  sum += 1;
+                                  currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                  if (currentUser.ethnicityCounter == 4)
+                                  {
+                                    banSystem.tempBan(loggedID!, true);
+                                    banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                    banSystem.updateUserCounter(loggedID!, CounterType.ethnicity, 0);
+                                    currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                    if (currentUser.numberOfBans! >= 5)
+                                    {
+                                      banSystem.updateUserState(loggedID!, true);
+                                      banSystem.userLogout(context);
+                                      navigateAndfFinish(context, SocialLoginScreen());
+                                    }
+                                  }
+                                  break;
+                                case 'gender':
+                                  banSystem.updateUserCounter(loggedID!, CounterType.gender, currentUser.genderCounter! + 1);
+                                  sum += 1;
+                                  currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                  if (currentUser.genderCounter == 6)
+                                  {
+                                    banSystem.tempBan(loggedID!, true);
+                                    banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                    banSystem.updateUserCounter(loggedID!, CounterType.gender, 0);
+                                    currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                    if (currentUser.numberOfBans! >= 5)
+                                    {
+                                      banSystem.updateUserState(loggedID!, true);
+                                      banSystem.userLogout(context);
+                                      navigateAndfFinish(context, SocialLoginScreen());
+                                    }
+                                  }
+                                  break;
+                                case 'other_cyberbullying':
+                                  banSystem.updateUserCounter(loggedID!, CounterType.other, currentUser.otherCounter! + 1);
+                                  sum += 1;
+                                  currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                  if (currentUser.otherCounter == 6)
+                                  {
+                                    banSystem.tempBan(loggedID!, true);
+                                    banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                    banSystem.updateUserCounter(loggedID!, CounterType.other, 0);
+                                    currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
+                                    if (currentUser.numberOfBans! >= 5)
+                                    {
+                                      banSystem.updateUserState(loggedID!, true);
+                                      banSystem.userLogout(context);
+                                      navigateAndfFinish(context, SocialLoginScreen());
+                                    }
+                                  }
+                                  break;
+                                default:
+                                  break;
+                              }
+                              banSystem.updateSumOfCounters(loggedID!, sum);
+                              SocialCubit.get(context)
+                                  .sendMessage(
                                 receiverId: userModel!.uId!,
-                                dateTime: DateTime.now().toString(),
-                                text: message1!,
+                                dateTime: DateTime.now()
+                                    .toString(),
+                                text: messageController.text,
                                 image: messageImg ?? '',
                                 warning: true,
                               );
+                              messageController.clear();
                               messageImg = null;
+                              if (sum >= 5)
+                              {
+                                banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                banSystem.tempBan(loggedID!, true);
+                                banSystem.updateSumOfCounters(loggedID!, 0);
+                              }
                               // Scroll to the last message
-                              //0scrollDown();
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Please enter some text or select an image.')),
+                              //scrollDown();
+                            }
+                            else {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(
+                                const SnackBar(content: Text(
+                                    'Please enter some text or select an image.')),
                               );
                             }
                           }
-                        else
-                          {
-                            if (messageImg != null)
-                            {
-                              SocialCubit.get(context).sendMessage(
+                          else {
+                            if (messageImg != null) {
+                              SocialCubit.get(context)
+                                  .sendMessage(
                                 receiverId: userModel!.uId!,
-                                dateTime: DateTime.now().toString(),
-                                text: message1!,
+                                dateTime: DateTime.now()
+                                    .toString(),
+                                text: messageController.text,
                                 image: messageImg ?? '',
                                 warning: false,
                               );
+                              messageController.clear();
                               messageImg = null;
                               // Scroll to the last message
                               //0scrollDown();
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Please enter some text or select an image.')),
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(
+                                const SnackBar(content: Text(
+                                    'Please enter some text or select an image.')),
                               );
                             }
-
                           }
-
-                        Navigator.pop(context);
+                          Navigator.pop(context);
+                        }
+                        else
+                        {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(
+                            const SnackBar(content: Text(
+                                'Due to inappropriate behavior you are banned from sending messages')),
+                          );
+                        }
                       },
                       child: Icon(IconBroken.Send),
                     ),

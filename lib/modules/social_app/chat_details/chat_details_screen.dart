@@ -8,6 +8,7 @@ import 'package:first_app/layout/social_app/cubit/cubit.dart';
 import 'package:first_app/layout/social_app/cubit/states.dart';
 import 'package:first_app/models/social_app/message_model.dart';
 import 'package:first_app/models/social_app/social_user_model.dart';
+import 'package:first_app/modules/social_app/chat_details/ban_systen.dart';
 import 'package:first_app/shared/components/constants.dart';
 import 'package:first_app/shared/styles/colors.dart';
 import 'package:first_app/shared/styles/icon_broken.dart';
@@ -37,109 +38,8 @@ class ChatDetailsScreen extends StatelessWidget {
   var messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
+  BanSystem banSystem = BanSystem();
 
-  //Needs to be updated still not working
-  Future<void> userLogout(BuildContext context) async {
-    await FirebaseAuth.instance.signOut();
-    CacheHelper.removeData(key: 'uId');
-    await FirebaseAuth.instance.authStateChanges().firstWhere((user) => user == null);
-    SocialCubit.get(context).clearUserModel();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => SocialLoginScreen()),
-    );
-  }
-
-  Future<void> tempBan(String userId,bool value) async {
-    try {
-      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
-      Map<String, dynamic> updateData = {
-        'isBanned': value,
-        'banEndTime': value ? DateTime.now().add(const Duration(seconds: 7)) : null, // set ban end time to 3 hours from now if user is banned
-      };
-      await docRef.update(updateData);
-      print('state updated successfully for user $userId');
-      if (value) {
-        Timer(const Duration(seconds: 7), () {
-          docRef.update({
-            'isBanned': false,
-            'banEndTime': null,
-          });
-          print('ban lifted for user $userId');
-        });
-      } else {
-        docRef.update({'banEndTime': null}); // remove ban end time if user is not banned
-      }
-    } catch (e) {
-      print('Error updating state for user $userId: $e');
-    }
-  }
-
-  Future<void> updateSumOfCounters(String userId,int value) async {
-    try {
-      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
-      await docRef.update({
-        'sumOfCounters': value,
-      });
-      print('numberOfBans updated successfully for user $userId');
-    } catch (e) {
-      print('Error updating numberOfBans for user $userId: $e');
-    }
-  }
-
-  Future<void> updateUserNumOfBans(String userId,int value) async {
-    try {
-      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
-      await docRef.update({
-        'numberOfBans': value,
-      });
-      print('numberOfBans updated successfully for user $userId');
-    } catch (e) {
-      print('Error updating numberOfBans for user $userId: $e');
-    }
-  }
-
-  Future<void> updateUserState(String userId,bool value) async {
-    try {
-      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
-      await docRef.update({
-        'isBanned': value,
-      });
-      print('state updated successfully for user $userId');
-    } catch (e) {
-      print('Error updating state for user $userId: $e');
-    }
-  }
-
-  Future<void> updateUserCounter(String userId, CounterType counterType, int amount) async {
-    try {
-      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
-      String counterField;
-      switch (counterType) {
-        case CounterType.age:
-          counterField = 'ageCounter';
-          break;
-        case CounterType.religion:
-          counterField = 'religionCounter';
-          break;
-        case CounterType.gender:
-          counterField = 'genderCounter';
-          break;
-        case CounterType.ethnicity:
-          counterField = 'ethnicityCounter';
-          break;
-        case CounterType.other:
-          counterField = 'otherCounter';
-          break;
-      }
-      await docRef.update({
-        counterField: amount,
-      });
-      print('Counter updated successfully for user $userId');
-    } catch (e) {
-      print('Error updating counter for user $userId: $e');
-    }
-  }
 
   void scrollDown() {
     _scrollController.animateTo(
@@ -319,92 +219,92 @@ class ChatDetailsScreen extends StatelessWidget {
                                           if (messageController.text.isNotEmpty) {
                                             switch (queryText) {
                                               case 'age':
-                                                updateUserCounter(loggedID!, CounterType.age, currentUser.ageCounter! + 1);
+                                                banSystem.updateUserCounter(loggedID!, CounterType.age, currentUser.ageCounter! + 1);
                                                 sum += 1;
                                                 currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                 if (currentUser.ageCounter == 3)
                                                   {
-                                                    tempBan(loggedID!, true);
-                                                    updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
-                                                    updateUserCounter(loggedID!, CounterType.age, 0);
+                                                    banSystem.tempBan(loggedID!, true);
+                                                    banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                                    banSystem.updateUserCounter(loggedID!, CounterType.age, 0);
                                                     currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                     if (currentUser.numberOfBans! >= 5)
                                                       {
-                                                        updateUserState(loggedID!, true);
-                                                        userLogout(context);
+                                                        banSystem.updateUserState(loggedID!, true);
+                                                        banSystem.userLogout(context);
                                                         navigateAndfFinish(context, SocialLoginScreen());
                                                       }
                                                   }
                                                 break;
                                               case 'religion':
-                                                updateUserCounter(loggedID!, CounterType.religion, currentUser.religionCounter! + 1);
+                                                banSystem.updateUserCounter(loggedID!, CounterType.religion, currentUser.religionCounter! + 1);
                                                 sum += 1;
                                                 currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                 if (currentUser.religionCounter == 2)
                                                 {
-                                                  tempBan(loggedID!, true);
-                                                  updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
-                                                  updateUserCounter(loggedID!, CounterType.religion, 0);
+                                                  banSystem.tempBan(loggedID!, true);
+                                                  banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                                  banSystem.updateUserCounter(loggedID!, CounterType.religion, 0);
                                                   currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                   if (currentUser.numberOfBans! >= 5)
                                                   {
-                                                    updateUserState(loggedID!, true);
-                                                    userLogout(context);
+                                                    banSystem.updateUserState(loggedID!, true);
+                                                    banSystem.userLogout(context);
                                                     navigateAndfFinish(context, SocialLoginScreen());
                                                   }
 
                                                 }
                                                 break;
                                               case 'ethnicity':
-                                                updateUserCounter(loggedID!, CounterType.ethnicity, currentUser.ethnicityCounter! + 1);
+                                                banSystem.updateUserCounter(loggedID!, CounterType.ethnicity, currentUser.ethnicityCounter! + 1);
                                                 sum += 1;
                                                 currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                 if (currentUser.ethnicityCounter == 4)
                                                 {
-                                                  tempBan(loggedID!, true);
-                                                  updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
-                                                  updateUserCounter(loggedID!, CounterType.ethnicity, 0);
+                                                  banSystem.tempBan(loggedID!, true);
+                                                  banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                                  banSystem.updateUserCounter(loggedID!, CounterType.ethnicity, 0);
                                                   currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                   if (currentUser.numberOfBans! >= 5)
                                                   {
-                                                    updateUserState(loggedID!, true);
-                                                    userLogout(context);
+                                                    banSystem.updateUserState(loggedID!, true);
+                                                    banSystem.userLogout(context);
                                                     navigateAndfFinish(context, SocialLoginScreen());
                                                   }
                                                 }
                                                 break;
                                               case 'gender':
-                                                updateUserCounter(loggedID!, CounterType.gender, currentUser.genderCounter! + 1);
+                                                banSystem.updateUserCounter(loggedID!, CounterType.gender, currentUser.genderCounter! + 1);
                                                 sum += 1;
                                                 currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                 if (currentUser.genderCounter == 6)
                                                 {
-                                                  tempBan(loggedID!, true);
-                                                  updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
-                                                  updateUserCounter(loggedID!, CounterType.gender, 0);
+                                                  banSystem.tempBan(loggedID!, true);
+                                                  banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                                  banSystem.updateUserCounter(loggedID!, CounterType.gender, 0);
                                                   currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                   if (currentUser.numberOfBans! >= 5)
                                                   {
-                                                    updateUserState(loggedID!, true);
-                                                    userLogout(context);
+                                                    banSystem.updateUserState(loggedID!, true);
+                                                    banSystem.userLogout(context);
                                                     navigateAndfFinish(context, SocialLoginScreen());
                                                   }
                                                 }
                                                 break;
                                               case 'other_cyberbullying':
-                                                updateUserCounter(loggedID!, CounterType.other, currentUser.otherCounter! + 1);
+                                                banSystem.updateUserCounter(loggedID!, CounterType.other, currentUser.otherCounter! + 1);
                                                 sum += 1;
                                                 currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                 if (currentUser.otherCounter == 6)
                                                 {
-                                                  tempBan(loggedID!, true);
-                                                  updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
-                                                  updateUserCounter(loggedID!, CounterType.other, 0);
+                                                  banSystem.tempBan(loggedID!, true);
+                                                  banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                                  banSystem.updateUserCounter(loggedID!, CounterType.other, 0);
                                                   currentUser = (await SocialCubit.get(context).getCurrentUserData(loggedID!))!;
                                                   if (currentUser.numberOfBans! >= 5)
                                                   {
-                                                    updateUserState(loggedID!, true);
-                                                    userLogout(context);
+                                                    banSystem.updateUserState(loggedID!, true);
+                                                    banSystem.userLogout(context);
                                                     navigateAndfFinish(context, SocialLoginScreen());
                                                   }
                                                 }
@@ -412,7 +312,7 @@ class ChatDetailsScreen extends StatelessWidget {
                                               default:
                                                 break;
                                             }
-                                            updateSumOfCounters(loggedID!, sum);
+                                            banSystem.updateSumOfCounters(loggedID!, sum);
                                             SocialCubit.get(context)
                                                 .sendMessage(
                                               receiverId: userModel!.uId!,
@@ -426,9 +326,9 @@ class ChatDetailsScreen extends StatelessWidget {
                                             messageImg = null;
                                             if (sum >= 5)
                                               {
-                                                updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
-                                                tempBan(loggedID!, true);
-                                                updateSumOfCounters(loggedID!, 0);
+                                                banSystem.updateUserNumOfBans(loggedID!, currentUser.numberOfBans! + 1);
+                                                banSystem.tempBan(loggedID!, true);
+                                                banSystem.updateSumOfCounters(loggedID!, 0);
                                               }
                                             // Scroll to the last message
                                             //scrollDown();
