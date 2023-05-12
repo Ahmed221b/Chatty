@@ -14,7 +14,6 @@ class WaitingVerificationScreen extends StatefulWidget {
 
 
 class _WaitingVerificationScreenState extends State<WaitingVerificationScreen> {
-  bool isButtonEnabled = false;
   late Timer refreshTimer;
 
   @override
@@ -29,7 +28,7 @@ class _WaitingVerificationScreenState extends State<WaitingVerificationScreen> {
     await user?.reload();
     if (user?.emailVerified == true) {
       setState(() {
-        isButtonEnabled = true;
+        navigateToLoginScreen();
       });
     }
   }
@@ -66,23 +65,19 @@ class _WaitingVerificationScreenState extends State<WaitingVerificationScreen> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
+          children: const [
+            Text(
               'Account Verification',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 20),
-            const Text(
+            SizedBox(height: 20),
+            Text(
               'We sent you a verification email.',
               style: TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 20),
-            const CircularProgressIndicator(),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: isButtonEnabled ? navigateToLoginScreen : null,
-              child: const Text('Go to Login'),
-            ),
+            SizedBox(height: 20),
+            CircularProgressIndicator(),
+            SizedBox(height: 20),
           ],
         ),
       ),
