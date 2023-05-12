@@ -1,19 +1,14 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:first_app/layout/social_app/cubit/cubit.dart';
-import 'package:first_app/modules/social_app/settings/settings_screen.dart';
-import 'package:first_app/modules/social_app/social_login/social_login_screen.dart';
-import 'package:first_app/shared/components/constants.dart';
+import 'package:Chatty/layout/social_app/cubit/cubit.dart';
+import 'package:Chatty/shared/components/constants.dart';
 import 'package:flutter/material.dart';
-import 'package:first_app/modules/social_app/social_login/cubit/states.dart';
+import 'package:Chatty/modules/social_app/social_login/cubit/states.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../main.dart';
-import '../../../../shared/components/components.dart';
-import '../../../../shared/network/local/chache_helper.dart';
+
 
 class SocialLoginCubit extends Cubit<SocialLoginStates>
 {

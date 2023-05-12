@@ -1,11 +1,9 @@
 import 'package:bloc/bloc.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:first_app/models/social_app/social_user_model.dart';
-import 'package:first_app/modules/social_app/social_register/cubit/states.dart';
+import 'package:Chatty/models/social_app/social_user_model.dart';
+import 'package:Chatty/modules/social_app/social_register/cubit/states.dart';
 import 'package:flutter/material.dart';
-import 'package:first_app/modules/social_app/social_login/cubit/states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../shared/components/constants.dart';
@@ -20,23 +18,33 @@ class SocialRegisterCubit extends Cubit<SocialRegisterStates>
     required String password,
     required String name,
     required String phone,
-  }) {
-   emit(SocialRegisterLoadingState());
-   FirebaseAuth.instance.createUserWithEmailAndPassword(
-       email: email,
-       password: password,
-   ).then((value) {
-     userCreate(
-         uId: value.user!.uid,
-         phone: phone,
-         email: email,
-         name: name,
-     );
-   }).catchError((error){
-     print(error.toString());
-     emit(SocialRegisterErrorState(error.toString()));
-   });
- }
+  }) async {
+    emit(SocialRegisterLoadingState());
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      // Send email verification to the user
+      await userCredential.user!.sendEmailVerification();
+
+      userCreate(
+        uId: userCredential.user!.uid,
+        phone: phone,
+        email: email,
+        name: name,
+      );
+
+      emit(SocialCreateUserSuccessState());
+    } catch (error) {
+      print(error.toString());
+      emit(SocialRegisterErrorState(error.toString()));
+    }
+  }
+
 
   void userCreate({
     required String name,
@@ -75,6 +83,7 @@ class SocialRegisterCubit extends Cubit<SocialRegisterStates>
           emit(SocialCreateUserErrorState(error.toString()));
         });
   }
+
 
 
   IconData suffix = Icons.visibility_outlined;

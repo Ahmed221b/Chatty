@@ -1,10 +1,10 @@
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:first_app/layout/social_app/cubit/cubit.dart';
-import 'package:first_app/layout/social_app/cubit/states.dart';
-import 'package:first_app/models/social_app/social_user_model.dart';
-import 'package:first_app/modules/social_app/chat_details/chat_details_screen.dart';
-import 'package:first_app/shared/components/components.dart';
-import 'package:first_app/shared/components/constants.dart';
+import 'package:Chatty/layout/social_app/cubit/cubit.dart';
+import 'package:Chatty/layout/social_app/cubit/states.dart';
+import 'package:Chatty/models/social_app/social_user_model.dart';
+import 'package:Chatty/modules/social_app/chat_details/chat_details_screen.dart';
+import 'package:Chatty/shared/components/components.dart';
+import 'package:Chatty/shared/components/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

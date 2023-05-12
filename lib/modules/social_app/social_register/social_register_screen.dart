@@ -1,8 +1,9 @@
+import 'package:Chatty/modules/social_app/social_register/waiting_screen.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
-import 'package:first_app/layout/social_app/social_layout.dart';
-import 'package:first_app/modules/social_app/social_login/social_login_screen.dart';
-import 'package:first_app/modules/social_app/social_register/cubit/cubit.dart';
-import 'package:first_app/modules/social_app/social_register/cubit/states.dart';
+import 'package:Chatty/layout/social_app/social_layout.dart';
+import 'package:Chatty/modules/social_app/social_login/social_login_screen.dart';
+import 'package:Chatty/modules/social_app/social_register/cubit/cubit.dart';
+import 'package:Chatty/modules/social_app/social_register/cubit/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -25,8 +26,13 @@ class RegisterScreen  extends StatelessWidget {
       child: BlocConsumer<SocialRegisterCubit,SocialRegisterStates>(
         listener: (context,state)
         {
-          if(state is SocialCreateUserSuccessState)
-          {
+          if (state is SocialCreateUserSuccessState) {
+            // Navigate to the waiting verification screen
+            navigateTo(context, WaitingVerificationScreen());
+
+          }
+          if (state is SocialEmailVerifiedState) {
+            // Verification completed, navigate to the login screen
             navigateAndfFinish(context, SocialLoginScreen());
           }
         },

@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:first_app/layout/social_app/cubit/cubit.dart';
-import 'package:first_app/layout/social_app/cubit/states.dart';
-import 'package:first_app/shared/components/components.dart';
-import 'package:first_app/shared/styles/icon_broken.dart';
+import 'package:Chatty/layout/social_app/cubit/cubit.dart';
+import 'package:Chatty/layout/social_app/cubit/states.dart';
+import 'package:Chatty/shared/components/components.dart';
+import 'package:Chatty/shared/styles/icon_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

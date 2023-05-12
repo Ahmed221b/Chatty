@@ -1,25 +1,17 @@
 
-
 import 'package:bloc/bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:first_app/layout/social_app/cubit/cubit.dart';
-import 'package:first_app/layout/social_app/social_layout.dart';
-import 'package:first_app/modules/social_app/chats/chats_screen.dart';
-import 'package:first_app/modules/social_app/settings/settings_screen.dart';
-
-import 'package:first_app/modules/social_app/social_login/social_login_screen.dart';
-import 'package:first_app/modules/social_app/social_register/social_register_screen.dart';
-
-import 'package:first_app/shared/bloc_observer.dart';
-import 'package:first_app/shared/components/components.dart';
-import 'package:first_app/shared/components/constants.dart';
-import 'package:first_app/shared/network/local/chache_helper.dart';
-import 'package:first_app/shared/styles/colors.dart';
+import 'package:Chatty/layout/social_app/cubit/cubit.dart';
+import 'package:Chatty/layout/social_app/social_layout.dart';
+import 'package:Chatty/modules/social_app/social_login/social_login_screen.dart';
+import 'package:Chatty/shared/bloc_observer.dart';
+import 'package:Chatty/shared/components/constants.dart';
+import 'package:Chatty/shared/network/local/chache_helper.dart';
+import 'package:Chatty/shared/styles/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'modules/social_app/chat_details/chat_details_screen.dart';
 import 'modules/social_app/splash_screen.dart';
 
 void main() async {

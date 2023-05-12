@@ -2,16 +2,17 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:Chatty/modules/profile_view/profile_view.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:first_app/layout/social_app/cubit/cubit.dart';
-import 'package:first_app/layout/social_app/cubit/states.dart';
-import 'package:first_app/models/social_app/message_model.dart';
-import 'package:first_app/models/social_app/social_user_model.dart';
-import 'package:first_app/modules/social_app/chat_details/ban_systen.dart';
-import 'package:first_app/shared/components/constants.dart';
-import 'package:first_app/shared/styles/colors.dart';
-import 'package:first_app/shared/styles/icon_broken.dart';
+import 'package:Chatty/layout/social_app/cubit/cubit.dart';
+import 'package:Chatty/layout/social_app/cubit/states.dart';
+import 'package:Chatty/models/social_app/message_model.dart';
+import 'package:Chatty/models/social_app/social_user_model.dart';
+import 'package:Chatty/modules/social_app/chat_details/ban_systen.dart';
+import 'package:Chatty/shared/components/constants.dart';
+import 'package:Chatty/shared/styles/colors.dart';
+import 'package:Chatty/shared/styles/icon_broken.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -106,17 +107,25 @@ class ChatDetailsScreen extends StatelessWidget {
                   titleSpacing: 0.0,
                   title: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 20.0,
-                        backgroundImage: NetworkImage(
-                          userModel!.image!,
+                      InkWell(
+                        onTap: () {
+                          navigateToProfileScreen(context);
+                        },
+                        child: CircleAvatar(
+                          radius: 20.0,
+                          backgroundImage: NetworkImage(userModel!.image!),
                         ),
                       ),
                       const SizedBox(
                         width: 15.0,
                       ),
-                      Text(
-                        userModel!.name!,
+                      InkWell(
+                        onTap: () {
+                          navigateToProfileScreen(context);
+                        },
+                        child: Text(
+                          userModel!.name!,
+                        ),
                       ),
                     ],
                   ),
@@ -622,4 +631,24 @@ class ChatDetailsScreen extends StatelessWidget {
 
 
   }
+  void showSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+
+  void navigateToProfileScreen(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>ProfileView(userModel: userModel,),
+      ),
+    );
+  }
+
 }
+
+
+
