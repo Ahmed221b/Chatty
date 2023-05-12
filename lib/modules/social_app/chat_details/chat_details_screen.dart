@@ -1,10 +1,6 @@
-
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:Chatty/modules/profile_view/profile_view.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:Chatty/modules/social_app/profile_view/profile_view.dart';
 import 'package:Chatty/layout/social_app/cubit/cubit.dart';
 import 'package:Chatty/layout/social_app/cubit/states.dart';
 import 'package:Chatty/models/social_app/message_model.dart';
@@ -18,7 +14,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import '../../../shared/components/components.dart';
-import '../../../shared/network/local/chache_helper.dart';
 import '../social_login/social_login_screen.dart';
 import 'image_message_screen.dart';
 

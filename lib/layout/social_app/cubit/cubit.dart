@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
@@ -8,13 +7,14 @@ import 'package:Chatty/layout/social_app/cubit/states.dart';
 import 'package:Chatty/models/social_app/message_model.dart';
 import 'package:Chatty/models/social_app/social_user_model.dart';
 import 'package:Chatty/modules/social_app/chats/chats_screen.dart';
-import 'package:Chatty/modules/social_app/settings/settings_screen.dart';
-import 'package:Chatty/modules/social_app/users/users_screen.dart';
 import 'package:Chatty/shared/components/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
+import '../../../modules/social_app/contacts/profile_screen.dart';
+import '../../../modules/social_app/myprofile/settings_screen.dart';
 
 class SocialCubit extends Cubit<SocialStates>{
   SocialCubit() : super(SocialInitialState());
@@ -71,8 +71,8 @@ class SocialCubit extends Cubit<SocialStates>{
   int currentIndex = 0;
   List<Widget> Screens = [
     ChatsScreen(),
-    UsersScreen(),
-    SettingsScreen(),
+    ContactsScreen(),
+    MyProfileScreen(),
   ];
   List<String> titles = [
     'Chats',

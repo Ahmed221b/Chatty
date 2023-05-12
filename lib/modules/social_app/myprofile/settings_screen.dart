@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../layout/social_app/cubit/states.dart';
 
-class SettingsScreen extends StatelessWidget {
+class MyProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SocialCubit,SocialStates>(
