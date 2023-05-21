@@ -1,5 +1,4 @@
-class SocialUserModel
-{
+class SocialUserModel {
   String? name;
   String? email;
   String? phone;
@@ -17,6 +16,7 @@ class SocialUserModel
   int? numberOfBans;
   int? sumOfCounters;
   DateTime? banEntTime;
+  List<String>? interests; // Add interests property
 
   SocialUserModel({
     this.email,
@@ -36,12 +36,10 @@ class SocialUserModel
     this.numberOfBans,
     this.sumOfCounters,
     this.banEntTime,
-
+    this.interests, // Include interests in the constructor
   });
 
-
-  SocialUserModel.fromJson(Map<String,dynamic> json)
-  {
+  SocialUserModel.fromJson(Map<String, dynamic> json) {
     email = json['email'];
     name = json['name'];
     phone = json['phone'];
@@ -59,32 +57,29 @@ class SocialUserModel
     numberOfBans = json['numberOfBans'];
     sumOfCounters = json['sumOfCounters'];
     banEntTime = json['banEntTime'];
+    interests = List<String>.from(json['interests'] ?? []); // Deserialize interests list
   }
 
-
-  Map<String,dynamic> toMap()
-  {
-    return {  
-      'name' : name,
-      'email' : email,
-      'phone' : phone,
-      'uId' : uId,
-      'image' : image,
-      'bio' : bio,
-      'cover' : cover,
-      'banEntTime':banEntTime,
-      'isEmailVerified' : isEmailVerified,
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'email': email,
+      'phone': phone,
+      'uId': uId,
+      'image': image,
+      'bio': bio,
+      'cover': cover,
+      'banEntTime': banEntTime,
+      'isEmailVerified': isEmailVerified,
       'isBanned': isBanned ?? false,
       'ageCounter': ageCounter ?? 0,
       'genderCounter': genderCounter ?? 0,
       'religionCounter': religionCounter ?? 0,
       'ethnicityCounter': ethnicityCounter ?? 0,
       'otherCounter': otherCounter ?? 0,
-      'numberOfBans': numberOfBans??0,
-      'sumOfCounters' : sumOfCounters??0,
-
+      'numberOfBans': numberOfBans ?? 0,
+      'sumOfCounters': sumOfCounters ?? 0,
+      'interests': interests ?? [], // Serialize interests list
     };
   }
-
-
 }

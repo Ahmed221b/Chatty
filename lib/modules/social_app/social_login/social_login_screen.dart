@@ -47,7 +47,8 @@ class SocialLoginScreen  extends StatelessWidget {
           }
         },
         builder: (context,state) {
-          return Theme(
+          return
+            Theme(
             data: ThemeData(
               scaffoldBackgroundColor: Colors.white,
               appBarTheme: const AppBarTheme(
