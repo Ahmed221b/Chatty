@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../shared/components/components.dart';
+import '../interests/interests_screen.dart';
 
 
 class RegisterScreen  extends StatelessWidget {
@@ -28,12 +29,8 @@ class RegisterScreen  extends StatelessWidget {
         {
           if (state is SocialCreateUserSuccessState) {
             // Navigate to the waiting verification screen
-            navigateTo(context, WaitingVerificationScreen());
+            navigateTo(context, WaitingVerificationScreen(email: emailController.text,password: passwordController.text,));
 
-          }
-          if (state is SocialEmailVerifiedState) {
-            // Verification completed, navigate to the login screen
-            navigateAndfFinish(context, SocialLoginScreen());
           }
         },
         builder: (context,state){
@@ -165,7 +162,7 @@ class RegisterScreen  extends StatelessWidget {
                               text: 'register',
                               upper: true,
                             ),
-                            fallback:(context) => Center(child: CircularProgressIndicator()),
+                            fallback:(context) => const Center(child: CircularProgressIndicator()),
                           ),
                         ],
                       ),

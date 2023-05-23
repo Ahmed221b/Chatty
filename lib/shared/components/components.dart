@@ -18,7 +18,7 @@ Widget defaultButton({
     },
     child: Text(
       upper ? text.toUpperCase() : text,
-      style: TextStyle(
+      style: const TextStyle(
         color: Colors.white,
       ),
     ),

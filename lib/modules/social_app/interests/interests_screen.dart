@@ -1,6 +1,19 @@
+import 'package:Chatty/layout/social_app/cubit/cubit.dart';
+import 'package:Chatty/modules/social_app/social_login/cubit/cubit.dart';
+import 'package:Chatty/shared/components/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import '../../../layout/social_app/social_layout.dart';
+import '../../../models/social_app/social_user_model.dart';
+import '../../../shared/components/components.dart';
+import '../../../shared/network/local/chache_helper.dart';
+
 class ChooseInterestsScreen extends StatefulWidget {
+  final String email;
+  final String password;
+  ChooseInterestsScreen({super.key, required this.email, required this.password});
+
   @override
   _ChooseInterestsScreenState createState() => _ChooseInterestsScreenState();
 }
@@ -30,6 +43,26 @@ class _ChooseInterestsScreenState extends State<ChooseInterestsScreen> {
   };
 
   bool isButtonPressed = false;
+
+  Future<void> updateUserInterests(String userId, List<String> interests) async {
+    try {
+      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
+
+      // Get the current user data
+      final docSnapshot = await docRef.get();
+      if (docSnapshot.exists) {
+        final userData = SocialUserModel.fromJson(docSnapshot.data()!);
+
+        // Update the interests field with the selected interests
+        userData.interests = interests;
+
+        // Update the user document in Firebase
+        await docRef.set(userData.toMap());
+      }
+    } catch (e) {
+      print('Error updating user interests for ID $userId: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -125,16 +158,30 @@ class _ChooseInterestsScreenState extends State<ChooseInterestsScreen> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            setState(() {
-              isButtonPressed = !isButtonPressed;
-            });
-          },
-          backgroundColor: isButtonPressed ? Colors.blue : Colors.white,
-          foregroundColor: isButtonPressed ? Colors.white : Colors.black,
-          child: const Icon(Icons.arrow_forward),
-        ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              // Call the function to update user interests
+              await updateUserInterests(loggedID!, selectedInterests);
+              SocialLoginCubit socialLoginCubit = SocialLoginCubit();
+              socialLoginCubit.userLogin(email: widget.email, password: widget.password, context: context);
+              CacheHelper.saveData(
+                key: 'uId',
+                value: loggedID,
+              ).then(
+                      (value){
+                    navigateAndfFinish(
+                      context,
+                      SocialLayout(),
+                    );
+                  });
+              setState(() {
+                isButtonPressed = !isButtonPressed;
+              });
+            },
+            backgroundColor: isButtonPressed ? Colors.blue : Colors.white,
+            foregroundColor: isButtonPressed ? Colors.white : Colors.black,
+            child: const Icon(Icons.arrow_forward),
+          ),
       ),
     );
   }

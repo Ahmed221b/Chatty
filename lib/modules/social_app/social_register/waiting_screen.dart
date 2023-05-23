@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../interests/interests_screen.dart';
 import '../social_login/social_login_screen.dart';
 import 'cubit/cubit.dart';
 import 'dart:async';
 
 class WaitingVerificationScreen extends StatefulWidget {
-  const WaitingVerificationScreen({super.key});
-
+  final String email;
+  final String password;
+  WaitingVerificationScreen({super.key, required this.email, required this.password});
   @override
   _WaitingVerificationScreenState createState() => _WaitingVerificationScreenState();
 }
@@ -28,7 +30,7 @@ class _WaitingVerificationScreenState extends State<WaitingVerificationScreen> {
     await user?.reload();
     if (user?.emailVerified == true) {
       setState(() {
-        navigateToLoginScreen();
+        navigateToInterestsScreen();
       });
     }
   }
@@ -44,11 +46,11 @@ class _WaitingVerificationScreenState extends State<WaitingVerificationScreen> {
     refreshTimer.cancel();
   }
 
-  void navigateToLoginScreen() {
+  void navigateToInterestsScreen() {
     stopRefreshTimer(); // Stop the refresh timer before navigating
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => SocialLoginScreen()),
+      MaterialPageRoute(builder: (context) => ChooseInterestsScreen(email: widget.email,password: widget.password,)),
           (route) => false,
     );
   }

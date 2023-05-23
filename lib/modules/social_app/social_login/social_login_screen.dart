@@ -123,7 +123,7 @@ class SocialLoginScreen  extends StatelessWidget {
                             },
                             decoration: InputDecoration(
                               labelText: 'Password',
-                              prefixIcon: Icon(Icons.lock_outline),
+                              prefixIcon: const Icon(Icons.lock_outline),
                               suffixIcon: IconButton(
                                 onPressed: (){
                                   SocialLoginCubit.get(context).changePasswordVisibilty();
@@ -132,7 +132,7 @@ class SocialLoginScreen  extends StatelessWidget {
                                   SocialLoginCubit.get(context).suffix,
                                 ),
                               ),
-                              border: OutlineInputBorder(),
+                              border: const OutlineInputBorder(),
                             ),
                             obscureText: SocialLoginCubit.get(context).isPassword,
                           ),
@@ -154,15 +154,15 @@ class SocialLoginScreen  extends StatelessWidget {
                               text: 'login',
                               upper: true,
                             ),
-                            fallback:(context) => Center(child: CircularProgressIndicator()),
+                            fallback:(context) => const Center(child: CircularProgressIndicator()),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 15.0,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
+                              const Text(
                                 'Don\'t have an account?',
                               ),
                               defaultTextButton(
