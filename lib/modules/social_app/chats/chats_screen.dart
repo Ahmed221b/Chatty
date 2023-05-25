@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:Chatty/layout/social_app/cubit/cubit.dart';
 import 'package:Chatty/layout/social_app/cubit/states.dart';
@@ -11,48 +12,88 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class ChatsScreen extends StatelessWidget {
   final _scrollController = ScrollController();
 
+  Future<List<String>> loggedInUserInterests(String userId) async {
+    try {
+      final docRef = FirebaseFirestore.instance.collection('users').doc(userId);
+      final docSnapshot = await docRef.get();
+
+      if (docSnapshot.exists) {
+        final userData = docSnapshot.data();
+        final List<String>? interests = userData?['interests']?.cast<String>();
+        return interests ?? [];
+      } else {
+        return [];
+      }
+    } catch (e) {
+      print('Error retrieving interests for user ID $userId: $e');
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    print(loggedID);
-    return BlocConsumer<SocialCubit,SocialStates>(
-      listener: (context,state){},
-      builder: (context,state){
-        return ConditionalBuilder(
-              condition: SocialCubit.get(context).users.isNotEmpty,
-              builder: (context) => ListView.separated(
-                controller: _scrollController,
-                physics: const BouncingScrollPhysics(),
-                itemBuilder: (context,index){
-                  final user = SocialCubit.get(context).users[index];
-                  if (user.uId == loggedID) {
-                    return const SizedBox.shrink(); // exclude the logged in user
-                  }
-                  return buildChatItem(user,context);
-                },
-                separatorBuilder: (context,index) => myDivider(),
-                itemCount: SocialCubit.get(context).users.length,
-              ),
-              fallback: (context) => Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 10),
-                    Text('Loading...'),
-                  ],
+    return FutureBuilder<List<String>>(
+      future: loggedInUserInterests(loggedID!),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasData) {
+          final loggedUserInterests = snapshot.data!;
+          final usersWithCommonInterests = SocialCubit.get(context).users.where((user) {
+            // Check if the user has at least one common interest with the logged-in user
+            return user.uId != loggedID && user.interests!.any(loggedUserInterests.contains);
+          }).toList();
+
+          return BlocConsumer<SocialCubit, SocialStates>(
+            listener: (context, state) {},
+            builder: (context, state) {
+              return ConditionalBuilder(
+                condition: usersWithCommonInterests.isNotEmpty,
+                builder: (context) => ListView.separated(
+                  controller: _scrollController,
+                  physics: const BouncingScrollPhysics(),
+                  itemBuilder: (context, index) {
+                    final user = usersWithCommonInterests[index];
+                    return buildChatItem(user, context);
+                  },
+                  separatorBuilder: (context, index) => myDivider(),
+                  itemCount: usersWithCommonInterests.length,
                 ),
-              ),
-            );
+                fallback: (context) => Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 10),
+                      Text('Sorry, Can\'t find someone with the same interests.'),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        } else if (snapshot.hasError) {
+          return const Center(
+            child: Text('Error loading interests'),
+          );
+        } else {
+          // Handle other states if needed
+          return const SizedBox.shrink();
+        }
       },
     );
   }
 
-  Widget buildChatItem(SocialUserModel model,context) => InkWell(
-    onTap: ()
-    {
-      navigateTo(context, ChatDetailsScreen(
-        userModel: model,
-      ),);
+  Widget buildChatItem(SocialUserModel model, context) => InkWell(
+    onTap: () {
+      navigateTo(
+        context,
+        ChatDetailsScreen(
+          userModel: model,
+        ),
+      );
     },
     child: Padding(
       padding: const EdgeInsets.all(20.0),
@@ -60,8 +101,7 @@ class ChatsScreen extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 25.0,
-            backgroundImage:
-            NetworkImage('${model.image}'),
+            backgroundImage: NetworkImage('${model.image}'),
           ),
           const SizedBox(
             width: 15.0,

@@ -164,6 +164,7 @@ class _ChooseInterestsScreenState extends State<ChooseInterestsScreen> {
               await updateUserInterests(loggedID!, selectedInterests);
               SocialLoginCubit socialLoginCubit = SocialLoginCubit();
               socialLoginCubit.userLogin(email: widget.email, password: widget.password, context: context);
+              socialUserModel =(await  SocialCubit.get(context).getCurrentUserData(loggedID!))!;
               CacheHelper.saveData(
                 key: 'uId',
                 value: loggedID,

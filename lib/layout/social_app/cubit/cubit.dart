@@ -8,12 +8,12 @@ import 'package:Chatty/models/social_app/message_model.dart';
 import 'package:Chatty/models/social_app/social_user_model.dart';
 import 'package:Chatty/modules/social_app/chats/chats_screen.dart';
 import 'package:Chatty/shared/components/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-import '../../../modules/social_app/contacts/profile_screen.dart';
 import '../../../modules/social_app/myprofile/settings_screen.dart';
 
 class SocialCubit extends Cubit<SocialStates>{
@@ -31,6 +31,7 @@ class SocialCubit extends Cubit<SocialStates>{
     socialUserModel.email='';
     socialUserModel.name='';
     socialUserModel.phone='';
+    socialUserModel.interests?.clear();
   }
 
 
@@ -71,12 +72,10 @@ class SocialCubit extends Cubit<SocialStates>{
   int currentIndex = 0;
   List<Widget> Screens = [
     ChatsScreen(),
-    ContactsScreen(),
     MyProfileScreen(),
   ];
   List<String> titles = [
     'Chats',
-    'Contacts',
     'Profile',
   ];
 
@@ -165,69 +164,79 @@ class SocialCubit extends Cubit<SocialStates>{
     }).catchError((error){
       emit(SocialUploadMessageImageErrorState());
     });
-  }
-
-
-  void uploadProfileImage({
-  required String name,
-  required String phone,
-  required String bio,
-  })
-  {
+  }void uploadProfileImage({
+    required String name,
+    required String phone,
+    required String bio,
+  }) {
     emit(SocialUserUpdateLoadingState());
     firebase_storage.FirebaseStorage.instance
         .ref()
         .child('users/${Uri.file(profileImage!.path).pathSegments.last}')
         .putFile(profileImage!)
-        .then((value){
-          value.ref.getDownloadURL().then((value)
-          {
-            print(value);
-            updateUser(
-                name: name,
-                phone: phone,
-                bio: bio,
-                image: value,
-            );
-          }).catchError((error){
-            emit(SocialUploadProfileImageErrorState());
-          });
-         }).catchError((error){
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+        print(value);
+        updateUser(
+          name: name,
+          phone: phone,
+          bio: bio,
+          image: value,
+          // Pass the existing values of the fields that you're not updating
+          cover: userModel.cover,
+          genderCounter: userModel.genderCounter,
+          otherCounter: userModel.otherCounter,
+          religionCounter: userModel.religionCounter,
+          ageCounter: userModel.ageCounter,
+          ethnicityCounter: userModel.ethnicityCounter,
+          isBanned: userModel.isBanned,
+          interests: userModel.interests, // Pass existing interests
+
+        );
+      }).catchError((error) {
+        emit(SocialUploadProfileImageErrorState());
+      });
+    }).catchError((error) {
       emit(SocialUploadProfileImageErrorState());
     });
   }
 
-
-
   void uploadCoverImage({
-  required String name,
-  required String phone,
-  required String bio,
-  })
-  {
+    required String name,
+    required String phone,
+    required String bio,
+  }) {
     emit(SocialUserUpdateLoadingState());
     firebase_storage.FirebaseStorage.instance
         .ref()
         .child('users/${Uri.file(coverImage!.path).pathSegments.last}')
         .putFile(coverImage!)
-        .then((value){
-      value.ref.getDownloadURL().then((value)
-      {
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
         print(value);
-          updateUser(
+        updateUser(
           name: name,
           phone: phone,
           bio: bio,
           cover: value,
+          // Pass the existing values of the fields that you're not updating
+          image: userModel.image,
+          genderCounter: userModel.genderCounter,
+          otherCounter: userModel.otherCounter,
+          religionCounter: userModel.religionCounter,
+          ageCounter: userModel.ageCounter,
+          ethnicityCounter: userModel.ethnicityCounter,
+          isBanned: userModel.isBanned,
+          interests: userModel.interests, // Pass existing interests
+
         );
-      }).catchError((error){
+      }).catchError((error) {
         emit(SocialUploadCoverImageErrorState());
       });
-    }).catchError((error){
+    }).catchError((error) {
       emit(SocialUploadCoverImageErrorState());
     });
   }
-
 
   void updateUser({
     String? name,
@@ -237,44 +246,41 @@ class SocialCubit extends Cubit<SocialStates>{
     int? otherCounter,
     int? religionCounter,
     int? ageCounter,
-    int? ethincityCounter,
+    int? ethnicityCounter,
     String? cover,
     String? image,
-    bool? isBanned
-  })
-  {
+    bool? isBanned,
+    List<String>? interests,
+  }) {
     emit(SocialUserUpdateLoadingState());
     SocialUserModel model = SocialUserModel(
-      name: name,
-      email: userModel!.email,
-      uId: userModel!.uId,
-      phone: phone,
-      bio: bio,
-      image: image??userModel!.image,
-      cover: cover??userModel!.cover,
+      name: name ?? userModel.name,
+      email: userModel.email,
+      uId: userModel.uId,
+      phone: phone ?? userModel.phone,
+      bio: bio ?? userModel.bio,
+      image: image ?? userModel.image,
+      cover: cover ?? userModel.cover,
       isEmailVerified: false,
-      genderCounter: genderCounter,
-      religionCounter: religionCounter,
-      otherCounter: otherCounter,
-      ageCounter: ageCounter,
-      ethnicityCounter: ethincityCounter,
-      isBanned: isBanned,
+      genderCounter: genderCounter ?? userModel.genderCounter,
+      religionCounter: religionCounter ?? userModel.religionCounter,
+      otherCounter: otherCounter ?? userModel.otherCounter,
+      ageCounter: ageCounter ?? userModel.ageCounter,
+      ethnicityCounter: ethnicityCounter ?? userModel.ethnicityCounter,
+      isBanned: isBanned ?? userModel.isBanned,
+      interests: interests ?? userModel.interests, // Preserve existing interests
     );
 
-    FirebaseFirestore
-        .instance
+    FirebaseFirestore.instance
         .collection('users')
-        .doc(userModel!.uId)
+        .doc(userModel.uId)
         .update(model.toMap())
-        .then((value)
-    {
+        .then((value) {
       getUserData();
-    })
-        .catchError((error){
+    }).catchError((error) {
       emit(SocialUserUpdateErrorState());
     });
   }
-
   List<SocialUserModel> users = [];
 
   void getUsers ()

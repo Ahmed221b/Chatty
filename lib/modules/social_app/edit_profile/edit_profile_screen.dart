@@ -181,7 +181,7 @@ class EditProfileScreen extends StatelessWidget {
                                 height: 5.0,
                               ),
                               if(state is SocialUserUpdateLoadingState)
-                                LinearProgressIndicator(),
+                                const LinearProgressIndicator(),
                             ],
                           ),
                         ),
@@ -208,7 +208,7 @@ class EditProfileScreen extends StatelessWidget {
                                 height: 5.0,
                               ),
                               if(state is SocialUserUpdateLoadingState)
-                                LinearProgressIndicator(),
+                                const LinearProgressIndicator(),
                             ],
                           ),
                         ),

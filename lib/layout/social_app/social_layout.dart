@@ -56,14 +56,6 @@ class SocialLayout extends StatelessWidget {
               ),
               actions: [
                 IconButton(
-                    onPressed: (){},
-                    icon: const Icon(IconBroken.Notification),
-                ),
-                IconButton(
-                    onPressed: (){},
-                    icon: const Icon(IconBroken.Search),
-                ),
-                IconButton(
                   onPressed: () async {
                     await FirebaseAuth.instance.signOut();
                     CacheHelper.removeData(key: 'uId');
@@ -93,12 +85,6 @@ class SocialLayout extends StatelessWidget {
                         IconBroken.Chat,
                       ),
                     label: 'Chats',
-                  ),
-                  BottomNavigationBarItem(
-                      icon: Icon(
-                        IconBroken.User,
-                      ),
-                    label: 'Contacts',
                   ),
                   BottomNavigationBarItem(
                       icon: Icon(

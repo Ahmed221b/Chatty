@@ -8,103 +8,146 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../layout/social_app/cubit/states.dart';
 
 class MyProfileScreen extends StatelessWidget {
+  final Map<String, IconData> interestIcons = {
+    'Sports': Icons.sports,
+    'Music': Icons.music_note,
+    'Travel': Icons.flight,
+    'Art': Icons.palette,
+    'Technology': Icons.computer,
+    'Food': Icons.restaurant,
+    'Fashion': Icons.shopping_bag,
+    'Movies': Icons.movie,
+  };
+
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<SocialCubit,SocialStates>(
-      listener: (context,state){},
-      builder: (context,state){
+    return BlocConsumer<SocialCubit, SocialStates>(
+      listener: (context, state) {},
+      builder: (context, state) {
         var userModel = SocialCubit.get(context).userModel;
-        return Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children:
-            [
-              Container(
-                height: 190.0,
-                child: Stack(
-                  alignment: AlignmentDirectional.bottomCenter,
-                  children: [
-                    Align(
-                      alignment: AlignmentDirectional.topCenter,
-                      child: Container(
-                        height: 140.0,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(
-                              4.0,),
-                            topRight: Radius.circular(4.0,
-                            ),
-                          ),
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              userModel!.cover ?? '',
-                            ),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                    CircleAvatar(
-                      radius: 64.0,
-                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                      child: CircleAvatar(
-                        radius: 60.0,
-                        backgroundImage: NetworkImage(
-                         '${userModel!.image}',
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(
-                height: 5.0,
-              ),
-              Text(
-                '${userModel.name}',
-                style: Theme.of(context).textTheme.bodyText1!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                '${userModel.bio}',
-                style: Theme.of(context).textTheme.caption,
-              ),
-              const SizedBox(
-                height: 20.0,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                        onPressed: ()
-                        {
-                          navigateTo(context, EditProfileScreen());
-                        },
-                        child:Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Text(
-                              'Edit Profile',
-                              style: TextStyle(
+        var interests = userModel?.interests ?? [];
 
+        return Scaffold(
+          body: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Container(
+                    height: 190.0,
+                    child: Stack(
+                      alignment: AlignmentDirectional.bottomCenter,
+                      children: [
+                        Align(
+                          alignment: AlignmentDirectional.topCenter,
+                          child: Container(
+                            height: 140.0,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(4.0),
+                                topRight: Radius.circular(4.0),
+                              ),
+                              image: DecorationImage(
+                                image: NetworkImage(userModel?.cover ?? ''),
+                                fit: BoxFit.cover,
                               ),
                             ),
-                            SizedBox(
-                              width:20.0,
-                            ),
-                            Icon(IconBroken.Edit),
-                          ],
-                        )
+                          ),
+                        ),
+                        CircleAvatar(
+                          radius: 64.0,
+                          backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                          child: CircleAvatar(
+                            radius: 60.0,
+                            backgroundImage: NetworkImage('${userModel?.image}'),
+                          ),
+                        ),
+                      ],
                     ),
+                  ),
+                  const SizedBox(height: 5.0),
+                  Text(
+                    '${userModel?.name}',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1!
+                        .copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '${userModel?.bio}',
+                    style: Theme.of(context).textTheme.caption,
+                  ),
+                  const SizedBox(height: 20.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton(
+                          onPressed: () {
+                            navigateTo(context, EditProfileScreen());
+                          },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: const [
+                              Text('Edit Profile'),
+                              SizedBox(width: 20.0),
+                              Icon(IconBroken.Edit),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20.0),
+                  // Interests Section
+                  Text(
+                    'Interests',
+                    style: Theme.of(context).textTheme.headline6,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Wrap(
+                    direction: Axis.horizontal,
+                    spacing: 8.0,
+                    runSpacing: 8.0,
+                    children: interests
+                        .map((interest) => _buildInterestWidget(interest))
+                        .toList(),
                   ),
                 ],
               ),
-            ],
+            ),
           ),
         );
       },
     );
   }
+
+  Widget _buildInterestWidget(String interest) {
+    final iconData = interestIcons[interest];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(iconData ?? Icons.label, size: 18.0),
+          const SizedBox(width: 4.0),
+          Text(
+            interest,
+            style: const TextStyle(
+              fontSize: 14.0, // Adjust the font size as needed
+              color: Colors.black, // Set the font color to black
+              decoration: TextDecoration.none, // Remove underline
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

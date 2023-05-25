@@ -57,7 +57,8 @@ class SocialUserModel {
     numberOfBans = json['numberOfBans'];
     sumOfCounters = json['sumOfCounters'];
     banEntTime = json['banEntTime'];
-    interests = List<String>.from(json['interests'] ?? []); // Deserialize interests list
+    interests = List<String>.from(
+        json['interests'] ?? []); // Deserialize interests list
   }
 
   Map<String, dynamic> toMap() {

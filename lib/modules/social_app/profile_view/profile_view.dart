@@ -10,7 +10,18 @@ import '../../../../layout/social_app/cubit/states.dart';
 
 class ProfileView extends StatelessWidget {
   final SocialUserModel? userModel;
-  const ProfileView({Key? key, this.userModel}) : super(key: key);
+  ProfileView({Key? key, this.userModel}) : super(key: key);
+
+  final Map<String, IconData> interestIcons = {
+    'Sports': Icons.sports,
+    'Music': Icons.music_note,
+    'Travel': Icons.flight,
+    'Art': Icons.palette,
+    'Technology': Icons.computer,
+    'Food': Icons.restaurant,
+    'Fashion': Icons.shopping_bag,
+    'Movies': Icons.movie,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +29,8 @@ class ProfileView extends StatelessWidget {
       child: BlocConsumer<SocialCubit, SocialStates>(
         listener: (context, state) {},
         builder: (context, state) {
-          var userModel = SocialCubit.get(context).userModel;
+          var interests = userModel?.interests ?? []; // Get interests from the userModel
+
           return Container(
             color: Colors.white,
             child: Column(
@@ -70,7 +82,7 @@ class ProfileView extends StatelessWidget {
                           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                           child: CircleAvatar(
                             radius: 60.0,
-                            backgroundImage: NetworkImage('${userModel!.image}'),
+                            backgroundImage: NetworkImage('${userModel?.image}'),
                           ),
                         ),
                       ],
@@ -89,10 +101,52 @@ class ProfileView extends StatelessWidget {
                   style: Theme.of(context).textTheme.caption,
                 ),
                 const SizedBox(height: 20.0),
+                // Interests Section
+                Text(
+                  'Interests',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                const SizedBox(height: 10.0),
+                Wrap(
+                  direction: Axis.horizontal,
+                  spacing: 8.0,
+                  runSpacing: 8.0,
+                  children: interests
+                      .map((interest) => _buildInterestWidget(interest))
+                      .toList(),
+                ),
               ],
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildInterestWidget(String interest) {
+    final iconData = interestIcons[interest];
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(4.0),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(iconData ?? Icons.label, size: 18.0),
+          const SizedBox(width: 4.0),
+          Text(
+            interest,
+            style: const TextStyle(
+              fontSize: 14.0, // Adjust the font size as needed
+              color: Colors.black, // Set the font color to black
+              decoration: TextDecoration.none, // Remove underline
+
+            ),
+          ),
+        ],
       ),
     );
   }
