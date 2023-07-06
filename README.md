@@ -40,4 +40,4 @@ Here are the instructions on how to use Chatty:
 
 ## Contact
 
-If you have any questions or suggestions, feel free to reach out to us at [ahmedawwad221b@gmail.com].
+If you have any questions or suggestions, feel free to reach out to me at [ahmedawwad221b@gmail.com].
